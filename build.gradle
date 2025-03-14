@@ -1,0 +1,135 @@
+buildscript {
+  repositories {
+    mavenCentral()
+    maven { url 'https://s01.oss.sonatype.org' }
+    gradlePluginPortal()
+    mavenLocal()
+    google()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+  }
+  dependencies {
+    // Your buildscript dependencies, if any
+  }
+}
+
+allprojects {
+  apply plugin: 'eclipse'
+  apply plugin: 'idea'
+
+  // This allows you to "Build and run using IntelliJ IDEA", an option in IDEA's Settings.
+  idea {
+    module {
+      outputDir file('build/classes/java/main')
+      testOutputDir file('build/classes/java/test')
+    }
+  }
+  ext {
+    visuiVersion = '1.5.5'
+  }
+}
+
+configure(subprojects) {
+  apply plugin: 'java-library'
+  sourceCompatibility = 17
+
+  // From https://lyze.dev/2021/04/29/libGDX-Internal-Assets-List/
+  // The article can be helpful when using assets.txt in your project.
+  tasks.register('generateAssetList') {
+    inputs.dir("${project.rootDir}/assets/")
+    // projectFolder/assets
+    File assetsFolder = new File("${project.rootDir}/assets/")
+    // projectFolder/assets/assets.txt
+    File assetsFile = new File(assetsFolder, "assets.txt")
+    // delete that file in case we've already created it
+    assetsFile.delete()
+
+    // iterate through all files inside that folder
+    // convert it to a relative path
+    // and append it to the file assets.txt
+    fileTree(assetsFolder).collect { assetsFolder.relativePath(it) }.sort().each {
+      assetsFile.append(it + "\n")
+    }
+  }
+  processResources.dependsOn 'generateAssetList'
+
+  compileJava {
+    options.incremental = true
+  }
+
+  dependencies {
+    api "com.kotcrab.vis:vis-ui:$visuiVersion"
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    implementation 'ch.qos.logback:logback-classic:1.5.17'
+  }
+}
+
+subprojects {
+  version = "$projectVersion"
+  ext.appName = 'solar'
+  repositories {
+    mavenCentral()
+    maven { url 'https://s01.oss.sonatype.org' }
+    // You may want to remove the following line if you have errors downloading dependencies.
+    mavenLocal()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url 'https://jitpack.io' }
+  }
+}
+
+eclipse.project.name = 'solar' + '-parent'
+
+tasks.register('makeShaderNameEnum') {
+  doLast {
+    // Define the directory containing your shader files.
+    def shadersDir = file("assets/shaders")
+    if (!shadersDir.exists()) {
+      println "Shaders directory not found: ${shadersDir}"
+      return
+    }
+
+    def packageName = "art.sol.display"
+    def outputDir = file("core/src/main/java/" + packageName.replace('.', '/'))
+    def enumFile = new File(outputDir, "Shaders.java")
+
+    // Filter shader files (files ending with .vert or .frag)
+    def shaderFiles = shadersDir.listFiles().findAll { file ->
+      file.isFile() && (file.name.endsWith(".vert") || file.name.endsWith(".frag"))
+    }
+
+    // Generate a list of maps, each containing the enum constant name and its string parameter.
+    def constants = shaderFiles.collect { file ->
+      def baseName = file.name.lastIndexOf('.') > 0 ? file.name.substring(0, file.name.lastIndexOf('.')) : file.name
+      def constantName = baseName.toUpperCase().replaceAll("[^A-Z0-9]", "_")
+      def param = baseName.toLowerCase().replaceAll("[^a-z0-9]", "_")
+      [constant: constantName, parameter: param]
+    }.unique { it.constant }.sort { a, b -> a.constant <=> b.constant }
+
+    // Build the enum file content.
+    def sb = new StringBuilder()
+    sb.append("package ${packageName};\n\n")
+    sb.append("public enum Shaders {\n")
+    constants.eachWithIndex { entry, idx ->
+      sb.append("    ${entry.constant}(\"${entry.parameter}\")")
+      sb.append(idx < constants.size() - 1 ? ",\n" : ";\n")
+    }
+    sb.append("\n")
+    sb.append("    private final String name;\n\n")
+    sb.append("    Shaders(String name) {\n")
+    sb.append("        this.name = name;\n")
+    sb.append("    }\n\n")
+    sb.append("    public String getName() {\n")
+    sb.append("        return name;\n")
+    sb.append("    }\n")
+    sb.append("}\n")
+
+    // Ensure the output directory exists.
+    outputDir.mkdirs()
+    // Write the generated content to the file.
+    enumFile.text = sb.toString()
+
+    println "Generated ${enumFile.absolutePath} with ${constants.size()} enum constants."
+  }
+}
+
