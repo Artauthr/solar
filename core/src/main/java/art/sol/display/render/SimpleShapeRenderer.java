@@ -1,16 +1,20 @@
 package art.sol.display.render;
 
 import art.sol.Body;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class SimpleShapeRenderer extends ARenderer {
     private final ShapeRenderer shapeRenderer;
 
-    private static final int CIRCLE_SEGMENT_COUNT = 30;
+    private static final int CIRCLE_SEGMENT_COUNT = 50;
 
     public SimpleShapeRenderer (Viewport viewport) {
         super(viewport);
@@ -21,6 +25,8 @@ public class SimpleShapeRenderer extends ARenderer {
 
     @Override
     public void drawBodies (Array<Body> bodies) {
+        ScreenUtils.clear(0.06f, 0.06f, 0.06f, 1f);
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.WHITE);
         shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);

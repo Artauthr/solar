@@ -1,11 +1,8 @@
 package art.sol;
 
-import art.sol.display.render.ARenderer;
-import art.sol.display.render.LightMapSpriteBatchRender;
-import art.sol.display.render.SpriteBatchRenderer;
-import art.sol.display.render.SimpleShapeRenderer;
+import art.sol.display.render.*;
+import art.sol.input.InputController;
 import art.sol.ui.UIController;
-import art.sol.util.PixmapTextureGenerator;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -18,22 +15,13 @@ public class Main extends ApplicationAdapter {
     private UIController uiController;
 
     private ARenderer renderer;
-    private Viewport viewport;
 
-    private static final float WORLD_WIDTH = 240;
-    private static final float WORLD_HEIGHT = 150;
-
-    public enum RendererType {
-        REGULAR_SHAPE_RENDERER,
-        SPRITE_BATCH_RENDERER,
-        LIGHTMAP_BATCH_RENDERER
-    }
+    private static final float WORLD_WIDTH = 300;
+    private static final float WORLD_HEIGHT = 200;
 
     @Override
     public void create() {
         init();
-        PixmapTextureGenerator.generateGlowTexture("circle", 30);
-
 
         Body body = new Body(12000, 7);
         body.getVelocity().set(0f, 0f);
@@ -43,48 +31,58 @@ public class Main extends ApplicationAdapter {
         Body body1 = new Body(5, 3);
         body1.getVelocity().set(0, 14);
         body1.setColor(Color.WHITE);
-        body1.getPosition().set(WORLD_WIDTH / 2 + 20, WORLD_HEIGHT / 2 - 10);
+        body1.getPosition().set(WORLD_WIDTH / 2 + 23, WORLD_HEIGHT / 2 - 8);
 
         Body body2 = new Body(3, 3);
-        body2.getVelocity().set(0, 13);
+        body2.getVelocity().set(0, 10);
         body2.setColor(Color.GOLDENROD);
-        body2.getPosition().set(WORLD_WIDTH / 2 - 30, WORLD_HEIGHT / 2 - 20);
+        body2.getPosition().set(WORLD_WIDTH / 2 - 30, WORLD_HEIGHT / 2 - 10);
+
+        Body body3 = new Body(3, 3);
+        body3.getVelocity().set(4, 10);
+        body3.setColor(Color.PURPLE);
+        body3.getPosition().set(WORLD_WIDTH / 2 - 40, WORLD_HEIGHT / 2 - 40);
 
 
         solarSystem.addBody(body);
         solarSystem.addBody(body1);
         solarSystem.addBody(body2);
-
-
-        API.getInstance().register(solarSystem);
-        API.getInstance().register(uiController);
-
-        uiController.init();
+        solarSystem.addBody(body3);
     }
 
     private void init () {
-        solarSystem = new SolarSystem();
+        GraphicsUtils graphicsUtils = new GraphicsUtils();
 
+        solarSystem = new SolarSystem();
+        uiController = new UIController();
+
+        API.getInstance().register(graphicsUtils);
+        API.getInstance().register(solarSystem);
+        API.getInstance().register(uiController);
+
+        InputController inputController = new InputController();
+        API.getInstance().register(inputController);
+
+        this.renderer = createRenderer();
+        uiController.init();
+
+        inputController.addProcessor(uiController.getStage());
+
+        API.get(GraphicsUtils.class).setUiViewport(uiController.getStage().getViewport());
+        API.get(GraphicsUtils.class).setGameViewport(renderer.getViewport());
+
+        inputController.activate();
+    }
+
+    private ARenderer createRenderer () {
         final OrthographicCamera camera = new OrthographicCamera();
         camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT/ 2f, 0);
         camera.update();
 
-        viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
-        renderer = createRenderer(RendererType.SPRITE_BATCH_RENDERER);
+        Viewport viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
+        API.get(GraphicsUtils.class).setGameViewport(viewport);
 
-        uiController = new UIController();
-    }
-
-    private ARenderer createRenderer (RendererType rendererType) {
-        switch (rendererType) {
-            case REGULAR_SHAPE_RENDERER :
-                return new SimpleShapeRenderer(viewport);
-            case SPRITE_BATCH_RENDERER:
-                return new SpriteBatchRenderer(viewport);
-            case LIGHTMAP_BATCH_RENDERER:
-                return new LightMapSpriteBatchRender(viewport);
-        }
-        return null;
+        return new SimpleShapeRenderer(viewport);
     }
 
     @Override
@@ -101,8 +99,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
-        viewport.update(width, height, true);
-
+        API.get(GraphicsUtils.class).getGameViewport().update(width, height, true);
         API.get(UIController.class).onResize(width, height);
     }
 

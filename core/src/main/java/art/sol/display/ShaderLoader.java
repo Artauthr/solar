@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ShaderLoader {
+    static {
+        ShaderProgram.pedantic = false;
+    }
 
     public static ShaderProgram load (String name) {
         String fragPath = "shaders/" + name + ".frag";
@@ -15,6 +18,7 @@ public class ShaderLoader {
 
         if (!shaderProgram.isCompiled()) {
             log.error("Failed to compile shader: {}", name);
+            log.info(shaderProgram.getLog());
             System.exit(0);
         }
 
