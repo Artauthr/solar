@@ -98,6 +98,10 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 
         spriteBatch.begin();
+
+        spriteBatch.setColor(Color.WHITE);
+        spriteBatch.draw(frameBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
         for (Body body : bodies) {
             Vector2 position = body.getPosition();
             Color color = body.getColor();
@@ -107,9 +111,9 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
             spriteBatch.setColor(color);
             spriteBatch.draw(circleTexture, position.x - radius, position.y - radius, size, size);
         }
-
-        spriteBatch.setColor(Color.WHITE);
-        spriteBatch.draw(frameBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//
+//        spriteBatch.setColor(Color.WHITE);
+//        spriteBatch.draw(frameBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         spriteBatch.end();
     }
