@@ -5,7 +5,7 @@ import art.sol.display.render.GraphicsUtils;
 import art.sol.input.BodyHoverListener;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.ScaleToAction;
@@ -23,7 +23,7 @@ public class UIInteractionOverlay extends VisTable {
     public UIInteractionOverlay() {
         setFillParent(true);
 
-        hoverImage = new Image(new Texture("sprites/glowCircle.png"));
+        hoverImage = new Image(new Texture("sprites/glow-circle.png"));
         hoverImage.setScaling(Scaling.fit);
     }
 
@@ -88,7 +88,7 @@ public class UIInteractionOverlay extends VisTable {
             float x = body.getPosition().x + body.getRadius();
             float y = body.getPosition().y + body.getRadius();
 
-            Vector2 gameToUiCoords = GraphicsUtils.gameToUi(x, y, 0f);
+            Vector3 gameToUiCoords = GraphicsUtils.worldToUi(x, y, 0f);
             widget.setPosition(gameToUiCoords.x, gameToUiCoords.y);
         }
 

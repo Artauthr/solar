@@ -7,6 +7,7 @@ import com.kotcrab.vis.ui.widget.VisWindow;
 public abstract class AFloatingPanel extends VisWindow {
     public AFloatingPanel(String title) {
         super(title);
+        setKeepWithinStage(true);
     }
 
     public AFloatingPanel () {

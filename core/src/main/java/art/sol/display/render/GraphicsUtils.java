@@ -30,7 +30,7 @@ public class GraphicsUtils {
         return tempCircle;
     }
 
-    public static Vector2 gameToUi (float x, float y, float z) {
+    public static Vector3 worldToUi (float x, float y, float z) {
         v3.set(x, y, z);
 
         GraphicsUtils graphicsUtils = API.get(GraphicsUtils.class);
@@ -39,6 +39,23 @@ public class GraphicsUtils {
         v3.y = Gdx.graphics.getHeight() - v3.y;
         graphicsUtils.uiViewport.unproject(v3);
 
-        return v2.set(v3.x, v3.y);
+        v3.z = 0f;
+        return v3;
+    }
+
+    public static Vector3 screenToWorld (float screenX, float screenY) {
+        v3.set(screenX, screenY, 0f);
+
+        GraphicsUtils graphicsUtils = API.get(GraphicsUtils.class);
+        graphicsUtils.gameViewport.unproject(v3);
+        return v3;
+    }
+
+    public static Vector3 worldToScreen (float worldX, float worldY) {
+        v3.set(worldX, worldY, 0f);
+
+        GraphicsUtils graphicsUtils = API.get(GraphicsUtils.class);
+        graphicsUtils.gameViewport.project(v3);
+        return v3;
     }
 }

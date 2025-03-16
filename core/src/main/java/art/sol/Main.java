@@ -8,6 +8,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class Main extends ApplicationAdapter {
@@ -16,27 +18,30 @@ public class Main extends ApplicationAdapter {
 
     private ARenderer renderer;
 
-    private static final float WORLD_WIDTH = 300;
-    private static final float WORLD_HEIGHT = 200;
+    public static final int WORLD_WIDTH = 300;
+    public static final int WORLD_HEIGHT = 200;
 
     @Override
     public void create() {
         init();
 
-        Body body = new Body(12000, 7);
+        Body body = new Body(100000, 40);
         body.getVelocity().set(0f, 0f);
         body.setColor(Color.SLATE);
-        body.getPosition().set(WORLD_WIDTH / 2, WORLD_HEIGHT / 2 - 5);
+//        body.getPosition().set(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f);
+        body.getPosition().set(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
+//        body.getPosition().set(20, 45);
 
-        Body body1 = new Body(5, 3);
-        body1.getVelocity().set(0, 14);
+        Body body1 = new Body(40000, 40);
+        body1.getVelocity().set(0, 20);
         body1.setColor(Color.WHITE);
-        body1.getPosition().set(WORLD_WIDTH / 2 + 23, WORLD_HEIGHT / 2 - 8);
+        body1.getPosition().set(WORLD_WIDTH / 2f + 23, WORLD_HEIGHT / 2f + 8);
 
-        Body body2 = new Body(3, 3);
-        body2.getVelocity().set(0, 10);
+        Body body2 = new Body(3, 18);
+        body2.getVelocity().set(2, 13);
         body2.setColor(Color.GOLDENROD);
-        body2.getPosition().set(WORLD_WIDTH / 2 - 30, WORLD_HEIGHT / 2 - 10);
+//        body2.getPosition().set(WORLD_WIDTH / 2f + 23, WORLD_HEIGHT / 2f + 8);
+        body2.getPosition().set(800, 350);
 
         Body body3 = new Body(3, 3);
         body3.getVelocity().set(4, 10);
@@ -45,9 +50,9 @@ public class Main extends ApplicationAdapter {
 
 
         solarSystem.addBody(body);
-        solarSystem.addBody(body1);
+//        solarSystem.addBody(body1);
         solarSystem.addBody(body2);
-        solarSystem.addBody(body3);
+//        solarSystem.addBody(body3);
     }
 
     private void init () {
@@ -69,7 +74,6 @@ public class Main extends ApplicationAdapter {
         inputController.addProcessor(uiController.getStage());
 
         API.get(GraphicsUtils.class).setUiViewport(uiController.getStage().getViewport());
-        API.get(GraphicsUtils.class).setGameViewport(renderer.getViewport());
 
         inputController.activate();
     }
@@ -79,10 +83,14 @@ public class Main extends ApplicationAdapter {
         camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT/ 2f, 0);
         camera.update();
 
-        Viewport viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
+//        Viewport viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
+//        API.get(GraphicsUtils.class).setGameViewport(viewport);
+
+        ScreenViewport viewport = new ScreenViewport(camera);
+        viewport.setWorldSize(WORLD_WIDTH, WORLD_HEIGHT);
         API.get(GraphicsUtils.class).setGameViewport(viewport);
 
-        return new SimpleShapeRenderer(viewport);
+        return new AdditiveBlendingFbRenderer(viewport);
     }
 
     @Override
@@ -99,7 +107,8 @@ public class Main extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         super.resize(width, height);
-        API.get(GraphicsUtils.class).getGameViewport().update(width, height, true);
+        renderer.onResize(width, height);
+
         API.get(UIController.class).onResize(width, height);
     }
 

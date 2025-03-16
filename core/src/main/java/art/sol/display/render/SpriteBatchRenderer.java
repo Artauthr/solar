@@ -33,7 +33,7 @@ public class SpriteBatchRenderer extends ARenderer {
         super(viewport);
 
         this.spriteBatch = new SpriteBatch();
-        circleTexture = new Texture(Gdx.files.internal("sprites/glowCircle.png"));
+        circleTexture = new Texture(Gdx.files.internal("sprites/glow-circle.png"));
     }
 
     @Override
