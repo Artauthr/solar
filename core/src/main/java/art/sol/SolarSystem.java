@@ -19,6 +19,9 @@ public class SolarSystem {
     private final Vector2 force = new Vector2();
     private final Vector2 accel = new Vector2();
 
+    public static SolarSystem get () { // helper
+        return API.get(SolarSystem.class);
+    }
 
     public void addBody (Body body) {
         bodies.add(body);

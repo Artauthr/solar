@@ -72,7 +72,7 @@ public class UIController implements Disposable {
     }
 
     public void init () {
-        addTimeStepPanel();
+//        addTimeStepPanel();
         addPopupOverlay();
 
         BodyInteractionController bodyInteractionController = API.get(InputController.class).getBodyInteractionController();

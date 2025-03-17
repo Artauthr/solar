@@ -1,6 +1,5 @@
 package art.sol;
 
-import art.sol.display.ShaderLoader;
 import art.sol.display.render.*;
 import art.sol.imgui.ImGuiController;
 import art.sol.input.InputController;
@@ -23,7 +22,6 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void create() {
-        ShaderLoader.init();
         init();
 
         Body body = new Body(100000, 40);
@@ -47,7 +45,7 @@ public class Main extends ApplicationAdapter {
         Body body3 = new Body(3, 3);
         body3.getVelocity().set(4, 10);
         body3.setColor(Color.PURPLE);
-        body3.getPosition().set(WORLD_WIDTH / 2 - 40, WORLD_HEIGHT / 2 - 40);
+        body3.getPosition().set(WORLD_WIDTH / 2f - 40, WORLD_HEIGHT / 2f - 40);
 
 
         solarSystem.addBody(body);

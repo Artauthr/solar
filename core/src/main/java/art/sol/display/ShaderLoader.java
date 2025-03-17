@@ -6,15 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ShaderLoader {
-    private static final boolean GL_3_ENABLED = true;
-
-    public static void init () {
+    static {
         ShaderProgram.pedantic = false;
-
-//        if (GL_3_ENABLED) {
-//            ShaderProgram.prependFragmentCode = "#version 330 core\n";
-//            ShaderProgram.prependVertexCode = "#version 330 core\n";
-//        }
     }
 
     public static ShaderProgram load (String name) {
