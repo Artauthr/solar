@@ -76,6 +76,13 @@ subprojects {
     maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
     maven { url 'https://jitpack.io' }
   }
+
+  dependencies {
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+
+    api "io.github.spair:imgui-java-binding:$imguiVersion"
+    api "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
+  }
 }
 
 eclipse.project.name = 'solar' + '-parent'

@@ -1,20 +1,20 @@
 package art.sol;
 
+import art.sol.display.ShaderLoader;
 import art.sol.display.render.*;
+import art.sol.imgui.ImGuiController;
 import art.sol.input.InputController;
 import art.sol.ui.UIController;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class Main extends ApplicationAdapter {
     private SolarSystem solarSystem;
     private UIController uiController;
+    private ImGuiController imGuiController;
 
     private ARenderer renderer;
 
@@ -23,6 +23,7 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void create() {
+        ShaderLoader.init();
         init();
 
         Body body = new Body(100000, 40);
@@ -53,6 +54,8 @@ public class Main extends ApplicationAdapter {
 //        solarSystem.addBody(body1);
         solarSystem.addBody(body2);
 //        solarSystem.addBody(body3);
+
+        imGuiController = new ImGuiController();
     }
 
     private void init () {
@@ -102,6 +105,8 @@ public class Main extends ApplicationAdapter {
 
         uiController.act(Gdx.graphics.getDeltaTime());
         uiController.draw();
+
+        imGuiController.render();
     }
 
     @Override

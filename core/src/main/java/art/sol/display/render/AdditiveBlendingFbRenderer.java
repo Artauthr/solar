@@ -1,16 +1,15 @@
 package art.sol.display.render;
 
-import art.sol.API;
 import art.sol.Body;
-import art.sol.Main;
+import art.sol.display.ShaderLoader;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,8 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     public AdditiveBlendingFbRenderer (Viewport viewport) {
         super(viewport);
 
-        this.spriteBatch = new SpriteBatch();
+        ShaderProgram defaultShader = ShaderLoader.load("default");
+        this.spriteBatch = new SpriteBatch(1000, defaultShader);
 
         circleTexture = new Texture(Gdx.files.internal("sprites/circle.png"));
         circleTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -99,8 +99,8 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
 
         spriteBatch.begin();
 
-        spriteBatch.setColor(Color.WHITE);
-        spriteBatch.draw(frameBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//        spriteBatch.setColor(Color.WHITE);
+//        spriteBatch.draw(frameBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         for (Body body : bodies) {
             Vector2 position = body.getPosition();
@@ -112,8 +112,8 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
             spriteBatch.draw(circleTexture, position.x - radius, position.y - radius, size, size);
         }
 //
-//        spriteBatch.setColor(Color.WHITE);
-//        spriteBatch.draw(frameBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        spriteBatch.setColor(Color.WHITE);
+        spriteBatch.draw(frameBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         spriteBatch.end();
     }

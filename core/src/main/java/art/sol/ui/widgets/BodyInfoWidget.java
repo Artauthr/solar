@@ -12,7 +12,5 @@ public class BodyInfoWidget extends VisTable {
         nameWidget.set("GayNigga", 420f);
 
         add(nameWidget).grow();
-
-        debug();
     }
 }

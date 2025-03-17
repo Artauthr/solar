@@ -3,6 +3,7 @@ package art.sol.ui;
 import art.sol.API;
 import art.sol.Body;
 import art.sol.SolarSystem;
+import art.sol.display.ShaderLoader;
 import art.sol.input.BodyInteractionController;
 import art.sol.input.InputController;
 import art.sol.ui.widgets.SliderFloatModifierPanel;
@@ -10,6 +11,7 @@ import art.sol.ui.widgets.UIInteractionOverlay;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
@@ -42,7 +44,8 @@ public class UIController implements Disposable {
         camera.update();
         viewport = new ScreenViewport(camera);
 
-        batch = new PolygonSpriteBatch();
+        ShaderProgram defaultUiShader = ShaderLoader.load("default");
+        batch = new PolygonSpriteBatch(2000, defaultUiShader);
 
         stage = new Stage(viewport, batch);
         stage.addActor(root);
