@@ -1,5 +1,6 @@
 package art.sol;
 
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 
 public class API {
@@ -21,5 +22,14 @@ public class API {
     @SuppressWarnings("unchecked")
     public static <T> T get (Class<T> cls) {
         return (T) instance.classMap.get(cls);
+    }
+
+    public void dispose () {
+        for (ObjectMap.Entry<Class<?>, Object> classObjectEntry : classMap) {
+            Object object = classObjectEntry.value;
+            if (object instanceof Disposable) {
+                ((Disposable) object).dispose();
+            }
+        }
     }
 }

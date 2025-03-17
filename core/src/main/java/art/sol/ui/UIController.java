@@ -2,6 +2,7 @@ package art.sol.ui;
 
 import art.sol.API;
 import art.sol.Body;
+import art.sol.valueproviders.FloatProperty;
 import art.sol.SolarSystem;
 import art.sol.display.ShaderLoader;
 import art.sol.input.BodyInteractionController;
@@ -85,7 +86,7 @@ public class UIController implements Disposable {
     }
 
     private void addTimeStepPanel () {
-        SliderFloatModifierPanel sliderFloatModifierPanel = new SliderFloatModifierPanel("Timestep", new FloatValueProvider() {
+        SliderFloatModifierPanel sliderFloatModifierPanel = new SliderFloatModifierPanel("Timestep", new FloatProperty() {
             @Override
             public float get() {
                 return API.get(SolarSystem.class).getTimeStep();

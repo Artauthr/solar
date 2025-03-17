@@ -1,9 +1,9 @@
-package art.sol.imgui.widgets.panels;
+package art.sol.imgui.panels;
 
 import art.sol.SolarSystem;
 import art.sol.imgui.widgets.ADebugPanel;
 import art.sol.imgui.widgets.DebugFloatSlider;
-import art.sol.ui.FloatValueProvider;
+import art.sol.valueproviders.FloatProperty;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 
@@ -16,7 +16,7 @@ public class WorldPanel extends ADebugPanel {
     }
 
     public WorldPanel() {
-        timeStepSlider = new DebugFloatSlider(-0.5f, 0.5f, new FloatValueProvider() {
+        timeStepSlider = new DebugFloatSlider(-0.5f, 0.5f, new FloatProperty() {
             @Override
             public float get() {
                 return SolarSystem.get().getTimeStep();
@@ -27,8 +27,6 @@ public class WorldPanel extends ADebugPanel {
                 SolarSystem.get().setTimeStep(value);
             }
         });
-
-
     }
 
     @Override
@@ -41,5 +39,4 @@ public class WorldPanel extends ADebugPanel {
     protected String getTitle() {
         return "World";
     }
-
 }

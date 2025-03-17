@@ -1,13 +1,13 @@
 package art.sol.imgui.widgets;
 
 import art.sol.imgui.DebugRenderable;
-import art.sol.ui.FloatValueProvider;
+import art.sol.valueproviders.FloatProperty;
 import imgui.ImGui;
 import imgui.flag.ImGuiSliderFlags;
 import lombok.Setter;
 
 public class DebugFloatSlider implements DebugRenderable {
-    private final FloatValueProvider floatValueProvider;
+    private final FloatProperty floatProperty;
     private final float[] modifierValue;
 
     @Setter
@@ -17,8 +17,8 @@ public class DebugFloatSlider implements DebugRenderable {
 
     private final int sliderFlags;
 
-    public DebugFloatSlider (float min, float max, int sliderFlags, FloatValueProvider valueProvider) {
-        this.floatValueProvider = valueProvider;
+    public DebugFloatSlider (float min, float max, int sliderFlags, FloatProperty valueProvider) {
+        this.floatProperty = valueProvider;
         this.sliderFlags = sliderFlags;
         this.min = min;
         this.max = max;
@@ -27,14 +27,14 @@ public class DebugFloatSlider implements DebugRenderable {
         modifierValue = new float[] {value};
     }
 
-    public DebugFloatSlider (float min, float max, FloatValueProvider valueProvider) {
+    public DebugFloatSlider (float min, float max, FloatProperty valueProvider) {
         this(min, max, ImGuiSliderFlags.None, valueProvider);
     }
 
     @Override
     public void render() {
         if (ImGui.sliderFloat("Timestep", modifierValue, min, max, null, sliderFlags)) {
-            floatValueProvider.set(modifierValue[0]);
+            floatProperty.set(modifierValue[0]);
         }
     }
 }

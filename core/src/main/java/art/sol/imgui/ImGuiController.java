@@ -1,14 +1,18 @@
 package art.sol.imgui;
 
+import art.sol.Main;
 import art.sol.Utils;
+import art.sol.imgui.panels.RenderingDebugPanel;
 import art.sol.imgui.widgets.ADebugPanel;
-import art.sol.imgui.widgets.panels.WorldPanel;
+import art.sol.imgui.panels.WorldPanel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import imgui.*;
+import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 
@@ -18,7 +22,7 @@ public class ImGuiController implements Disposable {
     private final ImGuiImplGl3 imGuiGl3;
     private InputProcessor savedInputProcessor = null;
 
-    public static final String FONT_NAME = "fonts/Roboto-Medium.ttf";
+    public static final String FONT_PATH = "fonts/Roboto-Medium.ttf";
 
     public ImGuiController () {
         long windowHandle = ((Lwjgl3Graphics) Gdx.graphics).getWindow().getWindowHandle();
@@ -36,6 +40,9 @@ public class ImGuiController implements Disposable {
 
     private void registerPanels () {
         registerPanel(new WorldPanel());
+        if (Main.PROFILING_ENABLED) {
+            registerPanel(new RenderingDebugPanel());
+        }
     }
 
     private void registerPanel (ADebugPanel panel) {
@@ -44,6 +51,7 @@ public class ImGuiController implements Disposable {
 
     private void configureIO (final ImGuiIO io) {
         io.setIniFilename(null);
+        io.setConfigFlags(io.getConfigFlags() | ImGuiConfigFlags.DockingEnable);
         initFonts(io);
     }
 
@@ -57,7 +65,7 @@ public class ImGuiController implements Disposable {
         fontConfig.setMergeMode(false);
 
         final short[] glyphRanges = rangesBuilder.buildRanges();
-        final byte[] fontBytes = Utils.loadBytes(FONT_NAME);
+        final byte[] fontBytes = Utils.loadBytes(FONT_PATH);
 
         io.getFonts().addFontFromMemoryTTF(fontBytes, 14, fontConfig, glyphRanges);
         io.getFonts().build();
@@ -68,7 +76,12 @@ public class ImGuiController implements Disposable {
     public void render () {
         newFrame();
 
+        ImVec2 center = ImGui.getMainViewport().getCenter();
+
+        float offset = 0;
         for (ADebugPanel panel : panels) {
+            ImGui.setNextWindowPos(0, center.y - offset, ImGuiCond.FirstUseEver);
+            offset += 200f;
             panel.render();
         }
 
