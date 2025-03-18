@@ -12,11 +12,36 @@ public class RenderingDebugPanel extends ADebugPanel {
     private final Array<DebugInfoRow> rows = new Array<>();
 
     public RenderingDebugPanel () {
-        makeRow("Draw calls:", () ->  API.get(GLProfiler.class).getDrawCalls());
-        makeRow("Texture binds:", () -> API.get(GLProfiler.class).getTextureBindings());
-        makeRow("Shader switches:", () -> API.get(GLProfiler.class).getShaderSwitches());
-        makeRow("Vertex amount:", () -> API.get(GLProfiler.class).getVertexCount().max);
-        makeRow("Calls:", () -> API.get(GLProfiler.class).getCalls());
+        makeRow("Draw calls:", new FloatProvider() {
+            @Override
+            public float readValue () {
+                return API.get(GLProfiler.class).getDrawCalls();
+            }
+        });
+        makeRow("Texture binds:", new FloatProvider() {
+            @Override
+            public float readValue () {
+                return API.get(GLProfiler.class).getTextureBindings();
+            }
+        });
+        makeRow("Shader switches:", new FloatProvider() {
+            @Override
+            public float readValue () {
+                return API.get(GLProfiler.class).getShaderSwitches();
+            }
+        });
+        makeRow("Vertex amount:", new FloatProvider() {
+            @Override
+            public float readValue () {
+                return API.get(GLProfiler.class).getVertexCount().max;
+            }
+        });
+        makeRow("Calls:", new FloatProvider() {
+            @Override
+            public float readValue () {
+                return API.get(GLProfiler.class).getCalls();
+            }
+        });
     }
 
     private void makeRow (String name, FloatProvider floatProvider) {

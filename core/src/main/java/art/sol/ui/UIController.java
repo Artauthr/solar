@@ -2,13 +2,12 @@ package art.sol.ui;
 
 import art.sol.API;
 import art.sol.Body;
-import art.sol.valueproviders.FloatProperty;
 import art.sol.SolarSystem;
 import art.sol.display.ShaderLoader;
 import art.sol.input.BodyInteractionController;
 import art.sol.input.InputController;
-import art.sol.ui.widgets.SliderFloatModifierPanel;
 import art.sol.ui.widgets.UIInteractionOverlay;
+import art.sol.valueproviders.FloatProvider;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
@@ -83,26 +82,6 @@ public class UIController implements Disposable {
     private void addPopupOverlay () {
         uiInteractionOverlay = new UIInteractionOverlay();
         root.addActor(uiInteractionOverlay);
-    }
-
-    private void addTimeStepPanel () {
-        SliderFloatModifierPanel sliderFloatModifierPanel = new SliderFloatModifierPanel("Timestep", new FloatProperty() {
-            @Override
-            public float get() {
-                return API.get(SolarSystem.class).getTimeStep();
-            }
-
-            @Override
-            public void set(float value) {
-                API.get(SolarSystem.class).setTimeStep(value);
-            }
-        });
-        sliderFloatModifierPanel.setConstraints(0f, 0.2f, 0.0001f);
-        root.addActor(sliderFloatModifierPanel);
-
-        float x = stage.getWidth() - sliderFloatModifierPanel.getPrefWidth() - PANEL_PAD;
-        float y = stage.getHeight() * 0.5f - PANEL_PAD;
-        sliderFloatModifierPanel.setPosition(x, y);
     }
 
     public void onHover (Body body) {

@@ -3,7 +3,7 @@ package art.sol.imgui.panels;
 import art.sol.SolarSystem;
 import art.sol.imgui.widgets.ADebugPanel;
 import art.sol.imgui.widgets.DebugFloatSlider;
-import art.sol.valueproviders.FloatProperty;
+import art.sol.valueproviders.FloatProvider;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 
@@ -16,15 +16,15 @@ public class WorldPanel extends ADebugPanel {
     }
 
     public WorldPanel() {
-        timeStepSlider = new DebugFloatSlider(-0.5f, 0.5f, new FloatProperty() {
+        timeStepSlider = new DebugFloatSlider(-0.5f, 0.5f, new FloatProvider() {
             @Override
-            public float get() {
+            public float readValue () {
                 return SolarSystem.get().getTimeStep();
             }
 
             @Override
-            public void set(float value) {
-                SolarSystem.get().setTimeStep(value);
+            public void writeValue () {
+                SolarSystem.get().setTimeStep(get());
             }
         });
     }
