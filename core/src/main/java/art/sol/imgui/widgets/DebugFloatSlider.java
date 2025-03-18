@@ -7,30 +7,34 @@ import imgui.flag.ImGuiSliderFlags;
 import lombok.Setter;
 
 public class DebugFloatSlider implements DebugRenderable {
-    private final FloatProvider floatProvider;
+    @Setter
+    private FloatProvider floatProvider;
 
-    @Setter
-    private float min;
-    @Setter
-    private float max;
+    private String title;
+
+    private final float min;
+    private final float max;
 
     private final int sliderFlags;
 
-    public DebugFloatSlider (float min, float max, int sliderFlags, FloatProvider valueProvider) {
-        this.floatProvider = valueProvider;
+    public DebugFloatSlider (String title, float min, float max) {
+        this(title, min, max, ImGuiSliderFlags.None);
+    }
+
+    public DebugFloatSlider (String title, float min, float max, int sliderFlags) {
+        this.title = title;
         this.sliderFlags = sliderFlags;
         this.min = min;
         this.max = max;
-    }
-
-    public DebugFloatSlider (float min, float max, FloatProvider valueProvider) {
-        this(min, max, ImGuiSliderFlags.None, valueProvider);
+        this.title = title;
     }
 
     @Override
-    public void render() {
-        if (ImGui.sliderFloat("Timestep", floatProvider.primitiveArray(), min, max, null, sliderFlags)) {
-            floatProvider.writeValue();
+    public final void render() {
+        if (floatProvider == null) return;
+
+        if (ImGui.sliderFloat(title, floatProvider.asPrimitiveArray(), min, max, null, sliderFlags)) {
+            floatProvider.writeUpdatedValue();
         }
     }
 }

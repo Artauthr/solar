@@ -1,24 +1,33 @@
 package art.sol.valueproviders;
 
-public abstract class FloatProvider {
+import art.sol.valueproviders.supplier.FloatConsumer;
+import art.sol.valueproviders.supplier.FloatSupplier;
+
+public class FloatProvider {
+    private final FloatSupplier getter;
+    private final FloatConsumer setter;
+
     private final float[] data = new float[1];
 
-    public float readValue () {
-        return 0f;
+    public FloatProvider(FloatSupplier getter, FloatConsumer setter) {
+        this.getter = getter;
+        this.setter = setter;
     }
 
     public float get () {
-        return data[0];
+        return getter.get();
     }
 
-    private void validate () {
+    public void set (float value) {
+        setter.consume(value);
     }
 
-    // change the actual variable affected by this
-    public void writeValue () {
-    }
-
-    public float[] primitiveArray () {
+    public float[] asPrimitiveArray() {
         return data;
     }
+
+    public void writeData () {
+
+    }
 }
+

@@ -7,14 +7,21 @@ import lombok.Setter;
 
 public class Body {
     @Getter
-    private final int mass;
+    @Setter
+    private int mass;
+
     @Getter
-    private final int radius;
+    @Setter
+    private int radius;
 
     @Getter
     private final Vector2 position = new Vector2();
     @Getter
     private final Vector2 velocity = new Vector2();
+
+    @Getter
+    @Setter
+    private boolean active = true;
 
     @Getter
     @Setter
