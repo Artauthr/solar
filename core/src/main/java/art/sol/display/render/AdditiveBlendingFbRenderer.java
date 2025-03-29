@@ -1,7 +1,8 @@
 package art.sol.display.render;
 
 import art.sol.Body;
-import art.sol.display.ShaderLoader;
+import art.sol.Main;
+import art.sol.display.ShaderManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     private final Texture circleTexture;
     private final Texture lightTexture;
 
+    @Getter
     private TextureRegion frameBufferTextureRegion;
     private FrameBuffer lightFrameBuffer;
 
@@ -30,7 +33,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     public AdditiveBlendingFbRenderer (Viewport viewport) {
         super(viewport);
 
-        ShaderProgram defaultShader = ShaderLoader.load("default");
+        ShaderProgram defaultShader = ShaderManager.getOrCreateShader("default");
         this.spriteBatch = new SpriteBatch(1000, defaultShader);
 
         circleTexture = new Texture(Gdx.files.internal("sprites/circle.png"));
@@ -43,15 +46,12 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     }
 
     private void createFrameBuffer () {
-        // TODO: 16.03.25 maybe not needed
         if (lightFrameBuffer != null) {
             lightFrameBuffer.dispose();
         }
-        int fbWidth = Gdx.graphics.getWidth();
-        int fbHeight = Gdx.graphics.getHeight();
-//
-//        int fbWidth = Main.WORLD_WIDTH;
-//        int fbHeight = Main.WORLD_HEIGHT;
+
+        int fbWidth = Main.WORLD_WIDTH;
+        int fbHeight = Main.WORLD_HEIGHT;
         lightFrameBuffer = new FrameBuffer(Pixmap.Format.RGBA8888, fbWidth, fbHeight, true);
         lightFrameBuffer.getColorBufferTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
@@ -63,7 +63,6 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
 
     private final static Comparator<Body> radiusComparator = (o1, o2) -> Float.compare(o2.getRadius(), o1.getRadius());
 
-
     @Override
     public void drawBodies (Array<Body> bodies) {
         lightFrameBuffer.begin();
@@ -73,10 +72,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
 
         spriteBatch.begin();
 
-
         /* LIGHTING PASS **/
-        bodies.sort(radiusComparator);
-
         for (Body body : bodies) {
             Vector2 position = body.getPosition();
             Color color = body.getColor();
@@ -87,12 +83,11 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
             spriteBatch.draw(lightTexture, position.x - size * 0.5f, position.y - size * 0.5f, size, size);
         }
 
-
         spriteBatch.end();
         lightFrameBuffer.end();
 
 
-        // main pass
+        /* MAIN PASS **/
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
 
         Gdx.gl.glClearColor(BACKGROUND_COLOR_VALUE, BACKGROUND_COLOR_VALUE, BACKGROUND_COLOR_VALUE, 1);
@@ -102,10 +97,6 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 
         spriteBatch.begin();
-
-//        spriteBatch.setColor(Color.WHITE);
-//        spriteBatch.draw(frameBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
         for (Body body : bodies) {
             Vector2 position = body.getPosition();
             Color color = body.getColor();
@@ -113,10 +104,11 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
             int size = radius * 2;
 
             spriteBatch.setColor(color);
-            spriteBatch.draw(circleTexture, position.x - radius, position.y - radius, size, size);
+            spriteBatch.draw(circleTexture, position.x - size * 0.5f, position.y - size * 0.5f, size, size);
         }
-//
+
         spriteBatch.setColor(Color.WHITE);
+        spriteBatch.setProjectionMatrix(spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         spriteBatch.draw(frameBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         spriteBatch.end();
@@ -125,7 +117,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     @Override
     public void onResize(int width, int height) {
         super.onResize(width, height);
-//        createFrameBuffer();
+        createFrameBuffer();
     }
 
     @Override

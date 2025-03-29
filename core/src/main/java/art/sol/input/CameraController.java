@@ -11,8 +11,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public class CameraController extends InputAdapter {
     private final static float CAMERA_SPEED = 0.09f;
 
-    public static final float MAX_ZOOM = 5f;
-    public static final float MIN_ZOOM = 0.4f;
+    public static final float MAX_ZOOM = 10f;
+    public static final float MIN_ZOOM = 0.01f;
 
     @Override
     public boolean scrolled (float amountX, float amountY) {

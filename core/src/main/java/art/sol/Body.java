@@ -24,12 +24,15 @@ public class Body {
     private boolean active = true;
 
     @Getter
-    @Setter
-    private Color color = Color.WHITE;
+    private final Color color = new Color(Color.WHITE);
 
     public Body (int mass, int radius) {
         this.mass = mass;
         this.radius = radius;
+    }
+
+    public void setColor (Color color) {
+        this.color.set(color);
     }
 
     public void deltaVelocity (float x, float y) {

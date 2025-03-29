@@ -2,17 +2,15 @@ package art.sol.ui;
 
 import art.sol.API;
 import art.sol.Body;
-import art.sol.display.ShaderLoader;
+import art.sol.display.ShaderManager;
 import art.sol.input.BodyInputListener;
 import art.sol.input.BodyInteractionController;
 import art.sol.input.InputController;
-import art.sol.ui.widgets.UIInteractionOverlay;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Disposable;
@@ -43,7 +41,7 @@ public class UIController implements Disposable, BodyInputListener {
         camera.update();
         viewport = new ScreenViewport(camera);
 
-        ShaderProgram defaultUiShader = ShaderLoader.load("default");
+        ShaderProgram defaultUiShader = ShaderManager.getOrCreateShader("default");
         batch = new PolygonSpriteBatch(2000, defaultUiShader);
 
         stage = new Stage(viewport, batch);

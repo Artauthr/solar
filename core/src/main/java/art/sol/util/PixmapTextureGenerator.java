@@ -16,7 +16,7 @@ public class PixmapTextureGenerator {
                 float distance = (float)Math.sqrt(dx * dx + dy * dy);
                 // Create a smooth alpha based on distance; tweak this for a stronger or softer glow.
                 float alpha = distance <= radius ? 1.0f - (distance / radius) : 0;
-                pixmap.setColor(1, 1, 1, 1f);
+                pixmap.setColor(1, 1, 1, alpha);
                 pixmap.drawPixel(x, y);
             }
         }

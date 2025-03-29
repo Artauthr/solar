@@ -15,6 +15,7 @@ import lombok.Setter;
 public class GraphicsUtils {
     private Viewport gameViewport;
     private Viewport uiViewport;
+    private ARenderer renderer;
 
     private static final Circle tempCircle = new Circle();
     private static final Vector3 v3 = new Vector3();
