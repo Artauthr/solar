@@ -24,4 +24,7 @@ public class DebugCheckboxWidget implements DebugRenderable {
             booleanProvider.set(!currentState);
         }
     }
+
+    public void setTarget () {
+    }
 }

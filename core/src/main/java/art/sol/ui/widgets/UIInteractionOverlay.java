@@ -2,7 +2,7 @@ package art.sol.ui.widgets;
 
 import art.sol.Body;
 import art.sol.display.render.GraphicsUtils;
-import art.sol.input.BodyHoverListener;
+import art.sol.input.BodyInputListener;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Vector3;
@@ -28,7 +28,12 @@ public class UIInteractionOverlay extends VisTable {
     }
 
     @Getter
-    private final BodyHoverListener bodyHoverListener = new BodyHoverListener() {
+    private final BodyInputListener bodyInputListener = new BodyInputListener() {
+        @Override
+        public void onTouchUp (Body body) {
+
+        }
+
         @Override
         public void onHoverEnter (Body body) {
             BodyInfoWidget bodyInfoWidget = obtainInfoWidget(body);

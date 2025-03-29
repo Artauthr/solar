@@ -14,6 +14,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Comparator;
+
 public class AdditiveBlendingFbRenderer extends ARenderer {
     private static final Logger log = LoggerFactory.getLogger(AdditiveBlendingFbRenderer.class);
     private final SpriteBatch spriteBatch;
@@ -59,7 +61,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         log.info("Created Frame Buffer");
     }
 
-    private Color debugColor = new Color(0.5f, 0.5f, 0.5f, 0.3f);
+    private final static Comparator<Body> radiusComparator = (o1, o2) -> Float.compare(o2.getRadius(), o1.getRadius());
 
 
     @Override
@@ -73,6 +75,8 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
 
 
         /* LIGHTING PASS **/
+        bodies.sort(radiusComparator);
+
         for (Body body : bodies) {
             Vector2 position = body.getPosition();
             Color color = body.getColor();

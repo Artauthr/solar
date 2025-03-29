@@ -16,18 +16,12 @@ public class WorldPanel extends ADebugPanel {
     }
 
     public WorldPanel() {
-        timeStepSlider = new DebugFloatSlider(-0.5f, 0.5f);
-        timeStepSlider.setFloatProvider(new FloatProvider() {
-            @Override
-            public float readValue () {
-                return SolarSystem.get().getTimeStep();
-            }
-
-            @Override
-            protected void writeValue (float value) {
-                SolarSystem.get().setTimeStep(value);
-            }
-        });
+        timeStepSlider = new DebugFloatSlider("Timestep",
+                new FloatProvider(() ->
+                SolarSystem.get().getTimeStep(),
+                value -> SolarSystem.get().setTimeStep(value)));
+        
+        timeStepSlider.setConstraints(-0.05f, 0.05f);
     }
 
     @Override

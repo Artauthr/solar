@@ -2,9 +2,11 @@ package art.sol.imgui;
 
 import art.sol.Main;
 import art.sol.Utils;
+import art.sol.imgui.panels.BodyDebugPanel;
 import art.sol.imgui.panels.RenderingDebugPanel;
 import art.sol.imgui.widgets.ADebugPanel;
 import art.sol.imgui.panels.WorldPanel;
+import art.sol.input.BodyInputListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
@@ -43,6 +45,7 @@ public class ImGuiController implements Disposable {
         if (Main.PROFILING_ENABLED) {
             registerPanel(new RenderingDebugPanel());
         }
+        registerPanel(new BodyDebugPanel());
     }
 
     private void registerPanel (ADebugPanel panel) {
@@ -50,7 +53,7 @@ public class ImGuiController implements Disposable {
     }
 
     private void configureIO (final ImGuiIO io) {
-        io.setIniFilename(null);
+        io.setIniFilename("imgui_prefs");
         io.setConfigFlags(io.getConfigFlags() | ImGuiConfigFlags.DockingEnable);
         initFonts(io);
     }
@@ -81,7 +84,7 @@ public class ImGuiController implements Disposable {
         float offset = 0;
         for (ADebugPanel panel : panels) {
             ImGui.setNextWindowPos(0, center.y - offset, ImGuiCond.FirstUseEver);
-            offset += 200f;
+            offset += 100;
             panel.render();
         }
 

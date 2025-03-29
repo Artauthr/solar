@@ -1,33 +1,25 @@
 package art.sol.valueproviders;
 
-import art.sol.valueproviders.supplier.FloatConsumer;
-import art.sol.valueproviders.supplier.FloatSupplier;
+import art.sol.valueproviders.io.FloatReader;
+import art.sol.valueproviders.io.FloatWriter;
 
 public class FloatProvider {
-    private final FloatSupplier getter;
-    private final FloatConsumer setter;
-
     private final float[] data = new float[1];
 
-    public FloatProvider(FloatSupplier getter, FloatConsumer setter) {
-        this.getter = getter;
-        this.setter = setter;
+    private final FloatReader reader;
+    private final FloatWriter writer;
+
+    public FloatProvider (FloatReader rx, FloatWriter wx) {
+        this.reader = rx;
+        this.writer = wx;
     }
 
-    public float get () {
-        return getter.get();
-    }
-
-    public void set (float value) {
-        setter.consume(value);
-    }
-
-    public float[] asPrimitiveArray() {
+    public float[] asPrimitiveArray () {
+        data[0] = reader.read();
         return data;
     }
 
-    public void writeData () {
-
+    public final void writeData () {
+        writer.write(data[0]);
     }
 }
-

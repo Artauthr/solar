@@ -19,6 +19,10 @@ public class SolarSystem {
     private final Vector2 force = new Vector2();
     private final Vector2 accel = new Vector2();
 
+    @Getter
+    @Setter
+    private boolean active = true;
+
     public static SolarSystem get () { // helper
         return API.get(SolarSystem.class);
     }
