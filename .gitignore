@@ -54,9 +54,6 @@ gwt-unitCache/
 www-test/
 .gwt-tmp/
 
-## TeaVM:
-# Not sure yet...
-
 ## IntelliJ, Android Studio:
 .idea/
 *.ipr
@@ -155,6 +152,7 @@ Thumbs.db
 *#*#
 /.kotlin/
 /assets/assets.txt
+imgui_prefs
 
 ## Special cases:
 

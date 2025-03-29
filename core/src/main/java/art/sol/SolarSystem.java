@@ -31,7 +31,14 @@ public class SolarSystem {
         bodies.add(body);
     }
 
-    public void updateVelocities () {
+    public void update () {
+        if (active) {
+            updateVelocities();
+            updatePositions();
+        }
+    }
+
+    private void updateVelocities () {
         for (int i = 0; i < bodies.size; i++) {
             Body b1 = bodies.get(i);
 
@@ -58,7 +65,7 @@ public class SolarSystem {
         }
     }
 
-    public void updatePositions () {
+    private void updatePositions () {
         for (Body body : bodies) {
             body.getPosition().add(body.getVelocity().x * timeStep, body.getVelocity().y * timeStep);
         }

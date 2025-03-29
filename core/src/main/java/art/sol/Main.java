@@ -110,8 +110,7 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void render () {
-        solarSystem.updateVelocities();
-        solarSystem.updatePositions();
+        solarSystem.update();
 
         renderer.drawBodies(solarSystem.getBodies());
 

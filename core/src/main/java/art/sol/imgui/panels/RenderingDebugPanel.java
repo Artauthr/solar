@@ -37,6 +37,6 @@ public class RenderingDebugPanel extends ADebugPanel {
 
     @Override
     protected String getTitle () {
-        return "GPU";
+        return "Rendering";
     }
 }

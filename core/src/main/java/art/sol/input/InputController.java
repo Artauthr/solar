@@ -13,12 +13,17 @@ public class InputController {
     @Getter
     private final BodyInteractionController bodyInteractionController;
 
+    private final CameraController cameraController;
+
     public InputController () {
         multiplexer = new InputMultiplexer();
+
+        cameraController = new CameraController();
 
         SolarSystem solarSystem = API.get(SolarSystem.class);
         bodyInteractionController = new BodyInteractionController(solarSystem.getBodies());
 
+        multiplexer.addProcessor(cameraController);
         multiplexer.addProcessor(bodyInteractionController);
     }
 

@@ -2,6 +2,8 @@ package art.sol.imgui.widgets;
 
 import art.sol.imgui.DebugRenderable;
 import art.sol.valueproviders.BooleanProvider;
+import art.sol.valueproviders.io.BooleanReader;
+import art.sol.valueproviders.io.BooleanWriter;
 import imgui.ImGui;
 import imgui.flag.ImGuiSliderFlags;
 import lombok.Setter;
@@ -19,12 +21,9 @@ public class DebugCheckboxWidget implements DebugRenderable {
     public void render () {
         if (booleanProvider == null) return;
 
-        boolean currentState = booleanProvider.get();
+        boolean currentState = booleanProvider.read();
         if (ImGui.checkbox(title, currentState)) {
-            booleanProvider.set(!currentState);
+            booleanProvider.write(!currentState);
         }
-    }
-
-    public void setTarget () {
     }
 }
