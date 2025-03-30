@@ -29,6 +29,8 @@ public class DebugFloat2Slider implements DebugRenderable {
     public DebugFloat2Slider (String title, Vector2 target) {
         this.title = title;
         this.float2Provider = new Vec2Provider(target);
+
+        sliderFlags = ImGuiSliderFlags.AlwaysClamp;
     }
 
     public void setTarget (Vector2 target) {
@@ -45,7 +47,7 @@ public class DebugFloat2Slider implements DebugRenderable {
 
     public void setTargetVector (Vector2 targetVector) {
         this.float2Provider = new Vec2Provider(targetVector);
-        setConstraints(-1000, 1000);
+
     }
 
     @Override

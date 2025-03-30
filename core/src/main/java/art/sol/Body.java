@@ -12,7 +12,7 @@ public class Body {
 
     @Getter
     @Setter
-    private int radius;
+    private float radius;
 
     @Getter
     private final Vector2 position = new Vector2();

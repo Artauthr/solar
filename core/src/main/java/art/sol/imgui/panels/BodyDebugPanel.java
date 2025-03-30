@@ -6,17 +6,22 @@ import art.sol.imgui.widgets.*;
 import art.sol.input.BodyInputListener;
 import art.sol.input.BodyInteractionController;
 import art.sol.input.InputController;
+import art.sol.valueproviders.Float2Provider;
+import art.sol.valueproviders.FloatProvider;
+import art.sol.valueproviders.io.FloatReader;
+import art.sol.valueproviders.io.FloatWriter;
+import imgui.flag.ImGuiColorEditFlags;
 
 public class BodyDebugPanel extends ADebugPanel implements BodyInputListener {
     private Body selection;
 
-    private DebugFloat2Slider positionSlider;
-    private DebugFloat2Slider velocitySlider;
+    private final DebugFloat2Slider positionSlider;
+    private final DebugFloat2Slider velocitySlider;
 
     private DebugFloatSlider massSlider;
-    private DebugFloatSlider radiusSlider;
+    private final DebugFloatSlider radiusSlider;
 
-    private DebugColorPicker bodyColorPicker;
+    private final DebugColorPicker bodyColorPicker;
 
     private DebugCheckboxWidget activeCheckBox;
 
@@ -24,13 +29,30 @@ public class BodyDebugPanel extends ADebugPanel implements BodyInputListener {
         BodyInteractionController bodyInteractionController = API.get(InputController.class).getBodyInteractionController();
         bodyInteractionController.registerListener(this);
 
+
+
         positionSlider = new DebugFloat2Slider("Position");
+        positionSlider.setConstraints(-300, 300);
         velocitySlider = new DebugFloat2Slider("Velocity");
+        velocitySlider.setConstraints(-10, 10);
 
 //        massSlider = new DebugFloatSlider("Mass", 0, 100);
-//        radiusSlider = new DebugFloatSlider("Radius", 0, 50);
+
+        radiusSlider = new DebugFloatSlider("Radius", new FloatProvider(() -> {
+            if (selection == null) {
+                return 0f;
+            }
+            return selection.getRadius();
+        }, value -> {
+            if (selection != null) {
+                selection.setRadius(value);
+            }
+        }));
+
+        radiusSlider.setConstraints(1f, 20f);
 
         bodyColorPicker = new DebugColorPicker("Color");
+        bodyColorPicker.setFlags(ImGuiColorEditFlags.NoInputs);
 //        bodyColorPicker.setTargetColor();
 
 //        activeCheckBox = new DebugCheckboxWidget("Active");
@@ -83,6 +105,7 @@ public class BodyDebugPanel extends ADebugPanel implements BodyInputListener {
         if (selection != null) {
             positionSlider.render();
             velocitySlider.render();
+            radiusSlider.render();
             bodyColorPicker.render();
 //            ImGui.sliderFloat2("Position",)
         }

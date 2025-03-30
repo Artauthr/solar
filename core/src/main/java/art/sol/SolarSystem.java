@@ -9,7 +9,8 @@ public class SolarSystem {
     public static final float GRAVITY_CONSTANT = 0.4f;
 
     @Getter
-    private final Array<Body> bodies = new Array<>();
+    @Setter
+    private Array<Body> bodies = new Array<>();
 
     @Getter
     @Setter
@@ -21,7 +22,7 @@ public class SolarSystem {
 
     @Getter
     @Setter
-    private boolean active = true;
+    private boolean active = false;
 
     public static SolarSystem get () { // helper
         return API.get(SolarSystem.class);

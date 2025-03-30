@@ -11,11 +11,9 @@ import art.sol.imgui.panels.RenderingDebugPanel;
 import art.sol.imgui.panels.TextureDebugPanel;
 import art.sol.imgui.widgets.ADebugPanel;
 import art.sol.imgui.panels.WorldPanel;
-import art.sol.util.Supplier;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import imgui.*;
@@ -23,6 +21,7 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import org.lwjgl.opengl.GL20;
 
 public class ImGuiController implements Disposable {
     private final Array<ADebugPanel> panels = new Array<>();
@@ -57,7 +56,8 @@ public class ImGuiController implements Disposable {
         registerPanel(new TextureDebugPanel(() -> { // TODO move rendering specific things somewhere else
             ARenderer renderer = API.get(GraphicsUtils.class).getRenderer();
             AdditiveBlendingFbRenderer renderer1 = (AdditiveBlendingFbRenderer) renderer;
-            return renderer1.getFrameBufferTextureRegion().getTexture();
+            return renderer1.getTrailBufferTextureRegion().getTexture();
+//            return renderer1.getGlowFadeoutTexture();
         }));
     }
 

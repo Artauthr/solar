@@ -2,6 +2,8 @@ package art.sol.imgui.widgets;
 
 import art.sol.imgui.DebugRenderable;
 import art.sol.valueproviders.FloatProvider;
+import art.sol.valueproviders.io.FloatReader;
+import art.sol.valueproviders.io.FloatWriter;
 import imgui.ImGui;
 import imgui.flag.ImGuiSliderFlags;
 import lombok.NonNull;
@@ -21,6 +23,10 @@ public class DebugFloatSlider implements DebugRenderable {
     public DebugFloatSlider (String title, @NonNull FloatProvider floatProvider) {
         this.floatProvider = floatProvider;
         this.title = title;
+    }
+
+    public DebugFloatSlider (String title, FloatReader fr, FloatWriter fw) {
+        this(title, new FloatProvider(fr, fw));
     }
 
     public void setConstraints (float min, float max) {

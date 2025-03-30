@@ -5,10 +5,14 @@ import art.sol.valueproviders.ColorProvider;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Null;
 import imgui.ImGui;
+import lombok.Setter;
 
 public class DebugColorPicker implements DebugRenderable {
     private final String title;
     private ColorProvider colorProvider;
+
+    @Setter
+    private int flags;
 
     public DebugColorPicker (String title) {
         this(title, null);
@@ -25,7 +29,7 @@ public class DebugColorPicker implements DebugRenderable {
 
     @Override
     public void render () {
-        if (ImGui.colorPicker4(title, colorProvider.asPrimitiveArray())) {
+        if (ImGui.colorPicker4(title, colorProvider.asPrimitiveArray(), flags)) {
             colorProvider.writeUpdatedValues();
         }
     }

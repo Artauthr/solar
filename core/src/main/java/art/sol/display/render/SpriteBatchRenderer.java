@@ -20,7 +20,7 @@ public class SpriteBatchRenderer extends ARenderer {
 
         spriteBatch.begin();
         for (Body body : bodies) {
-            int size = body.getRadius() * 2;
+            float size = body.getRadius() * 2;
 
             spriteBatch.setColor(body.getColor());
             spriteBatch.draw(circleTexture, body.getPosition().x, body.getPosition().y, size, size);
