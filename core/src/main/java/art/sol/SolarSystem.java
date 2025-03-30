@@ -50,8 +50,8 @@ public class SolarSystem {
                     continue;
                 }
 
-                int m1 = b1.getMass();
-                int m2 = b2.getMass();
+                float m1 = b1.getMass();
+                float m2 = b2.getMass();
 
                 Vector2 p1 = b1.getPosition();
                 Vector2 p2 = b2.getPosition();

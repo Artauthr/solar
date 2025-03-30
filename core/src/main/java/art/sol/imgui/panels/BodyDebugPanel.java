@@ -20,6 +20,7 @@ public class BodyDebugPanel extends ADebugPanel implements BodyInputListener {
 
     private DebugFloatSlider massSlider;
     private final DebugFloatSlider radiusSlider;
+    private final DebugFloatSlider lightEmissionSlider;
 
     private final DebugColorPicker bodyColorPicker;
 
@@ -48,8 +49,19 @@ public class BodyDebugPanel extends ADebugPanel implements BodyInputListener {
                 selection.setRadius(value);
             }
         }));
-
         radiusSlider.setConstraints(1f, 20f);
+
+        lightEmissionSlider = new DebugFloatSlider("Light", () -> {
+            if (selection == null) {
+                return 0f;
+            }
+            return selection.getLightEmission();
+        }, value -> {
+            if (selection != null) {
+                selection.setLightEmission(value);
+            }
+        });
+        lightEmissionSlider.setConstraints(0f, 100f);
 
         bodyColorPicker = new DebugColorPicker("Color");
         bodyColorPicker.setFlags(ImGuiColorEditFlags.NoInputs);
@@ -105,6 +117,7 @@ public class BodyDebugPanel extends ADebugPanel implements BodyInputListener {
         if (selection != null) {
             positionSlider.render();
             velocitySlider.render();
+            lightEmissionSlider.render();
             radiusSlider.render();
             bodyColorPicker.render();
 //            ImGui.sliderFloat2("Position",)

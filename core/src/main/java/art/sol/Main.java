@@ -1,6 +1,7 @@
 package art.sol;
 
 import art.sol.display.ShaderManager;
+import art.sol.display.StarBackgroundFrameBuffer;
 import art.sol.display.render.*;
 import art.sol.imgui.ImGuiController;
 import art.sol.input.InputController;

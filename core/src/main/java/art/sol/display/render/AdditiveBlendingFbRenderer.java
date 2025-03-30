@@ -2,6 +2,7 @@ package art.sol.display.render;
 
 import art.sol.Body;
 import art.sol.display.ShaderManager;
+import art.sol.display.StarBackgroundFrameBuffer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -19,7 +20,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     private static final Logger log = LoggerFactory.getLogger(AdditiveBlendingFbRenderer.class);
     private final SpriteBatch spriteBatch;
     private final Texture circleTexture;
-    private final Texture lightTexture;
+    private  Texture lightTexture;
 
     private final Texture glowFadeoutTexture;
 
@@ -35,6 +36,9 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     private FrameBuffer trailFrameBuffer;
 
     private final ShaderProgram glowFadeShader;
+
+    @Getter
+    private StarBackgroundFrameBuffer starBackgroundFrameBuffer;
 
     public AdditiveBlendingFbRenderer (Viewport viewport) {
         super(viewport);
@@ -52,6 +56,8 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
 
         glowFadeoutTexture = new Texture(Gdx.files.internal("sprites/rect.png"));
         glowFadeoutTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
+        starBackgroundFrameBuffer = new StarBackgroundFrameBuffer();
     }
 
     private void invalidateFrameBuffers () {
@@ -98,6 +104,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         drawTracePass(bodies);
         drawPlanets(bodies);
 
+        starBackgroundFrameBuffer.drawToFrameBuffer(lightTexture);
         // draw all frameBuffers
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_SRC_ALPHA);
@@ -107,6 +114,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         spriteBatch.setProjectionMatrix(spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
         // draw trail fb with a shader that removes near 0 alpha pixels
+        spriteBatch.draw(starBackgroundFrameBuffer.getTextureRegion(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         spriteBatch.draw(planetsBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         spriteBatch.draw(lightBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -130,7 +138,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
             Vector2 position = body.getPosition();
             Color color = body.getColor();
             float radius = body.getRadius();
-            float size = radius * 2 * 6;
+            float size = radius * body.getLightEmission();
             spriteBatch.setColor(color);
             spriteBatch.draw(lightTexture, position.x - size * 0.5f, position.y - size * 0.5f, size, size);
         }
@@ -192,11 +200,13 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         planetsFrameBuffer.end();
     }
 
-
     @Override
     public void onResize(int width, int height) {
         super.onResize(width, height);
         invalidateFrameBuffers();
+        starBackgroundFrameBuffer.getScreenViewport().update(width, height, true);
+        starBackgroundFrameBuffer.regenerate();
+
     }
 
     @Override

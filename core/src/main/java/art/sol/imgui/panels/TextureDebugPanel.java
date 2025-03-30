@@ -2,6 +2,7 @@ package art.sol.imgui.panels;
 
 import art.sol.imgui.widgets.ADebugPanel;
 import art.sol.util.Supplier;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import imgui.ImGui;
 
@@ -19,7 +20,8 @@ public class TextureDebugPanel extends ADebugPanel {
             return;
         }
 
-        ImGui.image(debugTexture.getTextureObjectHandle(), 400f, 200f, 0, 1, 1, 0);
+//        ImGui.image(debugTexture.getTextureObjectHandle(), 400f, 200f, 0, 1, 1, 0);
+        ImGui.image(debugTexture.getTextureObjectHandle(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, 1, 1, 0);
     }
 
     @Override

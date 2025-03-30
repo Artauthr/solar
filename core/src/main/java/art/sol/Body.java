@@ -8,11 +8,15 @@ import lombok.Setter;
 public class Body {
     @Getter
     @Setter
-    private int mass;
+    private float mass;
 
     @Getter
     @Setter
     private float radius;
+
+    @Getter
+    @Setter
+    private float lightEmission = 12f;
 
     @Getter
     private final Vector2 position = new Vector2();
@@ -26,7 +30,7 @@ public class Body {
     @Getter
     private final Color color = new Color(Color.WHITE);
 
-    public Body (int mass, int radius) {
+    public Body (float mass, float radius) {
         this.mass = mass;
         this.radius = radius;
     }
