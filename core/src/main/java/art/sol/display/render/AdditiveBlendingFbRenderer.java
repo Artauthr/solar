@@ -1,7 +1,6 @@
 package art.sol.display.render;
 
 import art.sol.Body;
-import art.sol.Main;
 import art.sol.display.ShaderManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
@@ -33,11 +32,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     private TextureRegion trailBufferTextureRegion;
     private FrameBuffer trailFrameBuffer;
 
-    private ShaderProgram glowFadeShader;
-
-    public static final float GLOW_DECAY_RATE = 0.05f;
-
-    private final static float BACKGROUND_COLOR_VALUE = 0.06f;
+    private final ShaderProgram glowFadeShader;
 
     public AdditiveBlendingFbRenderer (Viewport viewport) {
         super(viewport);
@@ -76,8 +71,10 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     }
 
     private FrameBuffer createFrameBuffer () {
-        int fbWidth = Main.WORLD_WIDTH;
-        int fbHeight = Main.WORLD_HEIGHT;
+//        int fbWidth = Main.WORLD_WIDTH;
+//        int fbHeight = Main.WORLD_HEIGHT;
+        int fbWidth = Gdx.graphics.getWidth();
+        int fbHeight = Gdx.graphics.getHeight();
         FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, fbWidth, fbHeight, true);
         fb.getColorBufferTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
