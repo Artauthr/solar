@@ -57,7 +57,6 @@ public class ImGuiController implements Disposable {
             ARenderer renderer = API.get(GraphicsUtils.class).getRenderer();
             AdditiveBlendingFbRenderer renderer1 = (AdditiveBlendingFbRenderer) renderer;
             return renderer1.getTrailBufferTextureRegion().getTexture();
-//            return renderer1.getGlowFadeoutTexture();
         }));
     }
 
