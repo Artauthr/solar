@@ -68,7 +68,15 @@ public class Main extends ApplicationAdapter {
 
         inputController.activate();
         imGuiController = new ImGuiController();
+
+//        try {
+//            imGuiController.hookToRenderer(renderer);
+//        } catch (IllegalAccessException e) {
+//            throw new RuntimeException(e);
+//        }
     }
+
+
 
     private ARenderer createRenderer () {
         final OrthographicCamera camera = new OrthographicCamera();

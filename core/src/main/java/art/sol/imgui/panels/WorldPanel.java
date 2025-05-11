@@ -37,6 +37,11 @@ public class WorldPanel extends ADebugPanel {
         ImGui.pushItemWidth(100);
         timeStepSlider.render();
         activeCheckBox.render();
+
+        if (ImGui.beginCombo("Scenes", "scn")) {
+            ImGui.button("bruh");
+            ImGui.endCombo();
+        }
     }
 
     @Override

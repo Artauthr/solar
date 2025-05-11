@@ -4,24 +4,32 @@ import art.sol.imgui.widgets.ADebugPanel;
 import art.sol.util.Supplier;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import imgui.ImGui;
 
 public class TextureDebugPanel extends ADebugPanel {
-    private final Supplier<Texture> textureSupplier;
+    private final Array<Texture> debugTextures = new Array<>();
+    private Texture current;
 
-    public TextureDebugPanel (Supplier<Texture> textureSupplier) {
-        this.textureSupplier = textureSupplier;
+    public void add (Texture texture) {
+        this.debugTextures.add(texture);
     }
 
     @Override
     public void renderContent () {
-        Texture debugTexture = textureSupplier.get();
-        if (debugTexture == null) {
-            return;
+        ImGui.beginTabBar("Textures");
+        for (Texture debugTexture : debugTextures) {
+            if (ImGui.tabItemButton("1")) {
+                current = debugTexture;
+            }
         }
 
-//        ImGui.image(debugTexture.getTextureObjectHandle(), 400f, 200f, 0, 1, 1, 0);
-        ImGui.image(debugTexture.getTextureObjectHandle(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, 1, 1, 0);
+        ImGui.endTabBar();
+
+        if (current != null) {
+            ImGui.image(current.getTextureObjectHandle(), Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), 0, 1, 1, 0);
+        }
     }
 
     @Override

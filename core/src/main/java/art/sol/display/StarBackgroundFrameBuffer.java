@@ -123,7 +123,7 @@ public class StarBackgroundFrameBuffer {
                 float posY = centerY + offsetY;
 
                 // Generate a small random radius for the star
-                float radius = MathUtils.random(3f, 13f);
+                float radius = MathUtils.random(0.1f, 1.7f);
                 float mass = 1f;
                 // Optionally, use the radius to determine the drawn size (e.g., diameter)
                 float size = radius * 2f;

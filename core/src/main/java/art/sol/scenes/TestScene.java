@@ -19,8 +19,8 @@ public class TestScene {
         }
 
         {
-            Body body = new Body(2, 3);
-            body.getVelocity().set(0, 20f);
+            Body body = new Body(3, 3);
+            body.getVelocity().set(0, 25);
             body.setColor(Color.RED);
             body.getPosition().set(Main.WORLD_WIDTH / 2f - 36, Main.WORLD_HEIGHT / 2f - 4);
             bodies.add(body);

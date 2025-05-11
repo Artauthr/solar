@@ -3,6 +3,7 @@ package art.sol.display.render;
 import art.sol.Body;
 import art.sol.display.ShaderManager;
 import art.sol.display.StarBackgroundFrameBuffer;
+import art.sol.imgui.annotations.DebugTexture;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -20,19 +21,25 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     private static final Logger log = LoggerFactory.getLogger(AdditiveBlendingFbRenderer.class);
     private final SpriteBatch spriteBatch;
     private final Texture circleTexture;
-    private  Texture lightTexture;
+    private Texture lightTexture;
 
     private final Texture glowFadeoutTexture;
 
     @Getter
+    @DebugTexture
     private TextureRegion lightBufferTextureRegion;
     private FrameBuffer lightFrameBuffer;
 
     private FrameBuffer planetsFrameBuffer;
+
+    @DebugTexture
     private TextureRegion planetsBufferTextureRegion;
 
     @Getter
+    @DebugTexture
     private TextureRegion trailBufferTextureRegion;
+
+
     private FrameBuffer trailFrameBuffer;
 
     private final ShaderProgram glowFadeShader;
@@ -104,17 +111,22 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         drawTracePass(bodies);
         drawPlanets(bodies);
 
-        starBackgroundFrameBuffer.drawToFrameBuffer(lightTexture);
+//        starBackgroundFrameBuffer.drawToFrameBuffer(lightTexture);
         // draw all frameBuffers
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_SRC_ALPHA);
+
+//        Gdx.gl.glEnable(GL20.GL_BLEND);
+//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         spriteBatch.begin();
         spriteBatch.setColor(Color.WHITE);
         spriteBatch.setProjectionMatrix(spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
+//        spriteBatch.disableBlending();
+        spriteBatch.enableBlending();
+        spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
         // draw trail fb with a shader that removes near 0 alpha pixels
-        spriteBatch.draw(starBackgroundFrameBuffer.getTextureRegion(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//        spriteBatch.draw(starBackgroundFrameBuffer.getTextureRegion(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         spriteBatch.draw(planetsBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         spriteBatch.draw(lightBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -126,42 +138,76 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         spriteBatch.end();
     }
 
+    private Color lightPassColor = new Color(1f, 1f, 1f, 0.5f);
+
     private void drawLightPass (Array<Body> bodies) {
         // render glow light textures to lightFrameBuffer
         lightFrameBuffer.begin();
-        Gdx.gl.glClearColor(0, 0, 0, 0);
+        Gdx.gl.glClearColor(0,0,0,0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        // make sure depth test is off (or at least not interfering)
+//        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+//        Gdx.gl.glEnable(GL20.GL_BLEND);
+
+        // ADDITIVE blend: src*α + dst*1
+        spriteBatch.enableBlending();
+//        Gdx.gl.glBlendEquation(GL30.GL_MAX);                // pick max(src, dst)
+        spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+
+//        Gdx.gl.glEnable(GL20.GL_BLEND);
+//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
+
+        spriteBatch.setColor(lightPassColor);
+
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
-
         for (Body body : bodies) {
             Vector2 position = body.getPosition();
             Color color = body.getColor();
             float radius = body.getRadius();
             float size = radius * body.getLightEmission();
-            spriteBatch.setColor(color);
-            spriteBatch.draw(lightTexture, position.x - size * 0.5f, position.y - size * 0.5f, size, size);
-        }
+//            spriteBatch.setColor(color);
+//            lightPassColor.r = color.r;
+//            lightPassColor.g = color.g;
+//            lightPassColor.b = color.b;
+            lightPassColor.set(color.r, color.g, color.b, 1f);
 
+            spriteBatch.setColor(lightPassColor);
+            spriteBatch.draw(lightTexture, position.x - size * 0.5f, position.y - size * 0.5f, size, size);
+//            float size = body.getRadius() * body.getLightEmission();
+//            spriteBatch.setColor(body.getColor());
+//            spriteBatch.draw(lightTexture, body.getPosition().x - size/2f,
+//                    body.getPosition().y - size/2f,
+//                    size, size
+//            );
+        }
+        spriteBatch.setColor(Color.WHITE);
         spriteBatch.end();
+
         lightFrameBuffer.end();
+
     }
 
     private void drawTracePass (Array<Body> bodies) {
         // render traces that planets leave when moving
         trailFrameBuffer.begin();
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_SRC_ALPHA);
+        spriteBatch.enableBlending();
+        spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+//        Gdx.gl.glEnable(GL20.GL_BLEND);
+//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_SRC_ALPHA);
+
+        Gdx.gl.glClearColor(0f, 0f, 0f, 0.02f);
 
         // draw a rectangle with alpha to gradually make existing glows transparent
-        spriteBatch.setProjectionMatrix(spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-        spriteBatch.begin();
-        spriteBatch.setColor(0f, 0f, 0f, 0.02f);
-        spriteBatch.draw(glowFadeoutTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        spriteBatch.end();
+//        spriteBatch.setProjectionMatrix(spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+//        spriteBatch.begin();
+//        spriteBatch.setColor(0f, 0f, 0f, 0.02f);
+//        spriteBatch.draw(glowFadeoutTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//        spriteBatch.end();
 
         // draw the light textures
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_SRC_ALPHA);
+//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_SRC_ALPHA);
         spriteBatch.setColor(Color.WHITE);
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
@@ -204,8 +250,8 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     public void onResize(int width, int height) {
         super.onResize(width, height);
         invalidateFrameBuffers();
-        starBackgroundFrameBuffer.getScreenViewport().update(width, height, true);
-        starBackgroundFrameBuffer.regenerate();
+//        starBackgroundFrameBuffer.getScreenViewport().update(width, height, true);
+//        starBackgroundFrameBuffer.regenerate();
 
     }
 
