@@ -1,33 +1,22 @@
 package art.sol;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 public class Body {
-    @Getter
-    @Setter
     private float mass;
-
-    @Getter
-    @Setter
     private float radius;
-
-    @Getter
-    @Setter
     private float lightEmission = 12f;
 
-    @Getter
-    private final Vector2 position = new Vector2();
-    @Getter
-    private final Vector2 velocity = new Vector2();
+    private final Vector3 position = new Vector3();
+    private final Vector3 velocity = new Vector3();
 
-    @Getter
-    @Setter
     private boolean active = true;
 
-    @Getter
     private final Color color = new Color(Color.WHITE);
 
     public Body (float mass, float radius) {
@@ -39,7 +28,7 @@ public class Body {
         this.color.set(color);
     }
 
-    public void deltaVelocity (float x, float y) {
-        velocity.add(x, y);
+    public void deltaVelocity (float x, float y, float z) {
+        velocity.add(x, y, z);
     }
 }

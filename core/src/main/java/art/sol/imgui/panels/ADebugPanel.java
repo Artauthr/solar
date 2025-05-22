@@ -1,4 +1,4 @@
-package art.sol.imgui.widgets;
+package art.sol.imgui.panels;
 
 import imgui.ImGui;
 

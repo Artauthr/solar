@@ -27,7 +27,7 @@ public class GraphicsUtils {
     }
 
     public static Circle getBodyCollisionCircle (Body body) {
-        tempCircle.set(body.getPosition(), body.getRadius());
+        tempCircle.set(body.getPosition().x, body.getPosition().y, body.getRadius());
         return tempCircle;
     }
 

@@ -1,29 +1,20 @@
 package art.sol.imgui.widgets;
 
-import art.sol.imgui.DebugRenderable;
-import art.sol.valueproviders.BooleanProvider;
 import art.sol.valueproviders.io.BooleanReader;
 import art.sol.valueproviders.io.BooleanWriter;
 import imgui.ImGui;
-import imgui.flag.ImGuiSliderFlags;
-import lombok.Setter;
 
-public class DebugCheckboxWidget implements DebugRenderable {
+public class DebugCheckboxWidget {
     private final String title;
-    private final BooleanProvider booleanProvider;
 
-    public DebugCheckboxWidget (String title, BooleanProvider booleanProvider) {
+    public DebugCheckboxWidget (String title) {
         this.title = title;
-        this.booleanProvider = booleanProvider;
     }
 
-    @Override
-    public void render () {
-        if (booleanProvider == null) return;
-
-        boolean currentState = booleanProvider.read();
+    public void render (BooleanReader bReader, BooleanWriter bWriter) {
+        boolean currentState = bReader.read();
         if (ImGui.checkbox(title, currentState)) {
-            booleanProvider.write(!currentState);
+            bWriter.write(!currentState);
         }
     }
 }

@@ -1,6 +1,6 @@
 package art.sol;
 
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,9 +16,9 @@ public class SolarSystem {
     @Setter
     private float timeStep = 0.02f;
 
-    private final Vector2 forceDirection = new Vector2();
-    private final Vector2 force = new Vector2();
-    private final Vector2 accel = new Vector2();
+    private final Vector3 forceDirection = new Vector3();
+    private final Vector3 force = new Vector3();
+    private final Vector3 accel = new Vector3();
 
     @Getter
     @Setter
@@ -43,8 +43,16 @@ public class SolarSystem {
         for (int i = 0; i < bodies.size; i++) {
             Body b1 = bodies.get(i);
 
+            if (!b1.isActive()) {
+                continue;
+            }
+
             for (int j = 0; j < bodies.size; j++) {
                 Body b2 = bodies.get(j);
+
+                if (!b2.isActive()) {
+                    return;
+                }
 
                 if (b1 == b2) {
                     continue;
@@ -53,22 +61,26 @@ public class SolarSystem {
                 float m1 = b1.getMass();
                 float m2 = b2.getMass();
 
-                Vector2 p1 = b1.getPosition();
-                Vector2 p2 = b2.getPosition();
+                Vector3 p1 = b1.getPosition();
+                Vector3 p2 = b2.getPosition();
 
-                float sqrDst = Vector2.dst2(p1.x, p1.y, p2.x, p2.y);
-                forceDirection.set(p2).sub(p1).nor();
+                float sqrDst = p1.dst2(p2);
+                forceDirection.set(p2).sub(p1).nor(); // normalized direction
                 force.set(forceDirection).scl(GRAVITY_CONSTANT * m1 * m2 / sqrDst);
-                accel.set(force).scl((float) 1 / m1);
+                accel.set(force).scl(1f / m1);
 
-                b1.deltaVelocity(accel.x * timeStep, accel.y * timeStep);
+                b1.getVelocity().mulAdd(accel, timeStep);
             }
         }
     }
 
+
     private void updatePositions () {
         for (Body body : bodies) {
-            body.getPosition().add(body.getVelocity().x * timeStep, body.getVelocity().y * timeStep);
+            final Vector3 position = body.getPosition();
+            final Vector3 velocity = body.getVelocity();
+
+            position.mulAdd(velocity, timeStep);
         }
     }
 }

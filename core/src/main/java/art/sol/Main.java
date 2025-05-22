@@ -1,7 +1,6 @@
 package art.sol;
 
 import art.sol.display.ShaderManager;
-import art.sol.display.StarBackgroundFrameBuffer;
 import art.sol.display.render.*;
 import art.sol.imgui.ImGuiController;
 import art.sol.input.InputController;
@@ -9,7 +8,9 @@ import art.sol.scenes.TestScene;
 import art.sol.ui.UIController;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -68,20 +69,32 @@ public class Main extends ApplicationAdapter {
 
         inputController.activate();
         imGuiController = new ImGuiController();
-
-//        try {
-//            imGuiController.hookToRenderer(renderer);
-//        } catch (IllegalAccessException e) {
-//            throw new RuntimeException(e);
-//        }
     }
 
 
+    private Camera createCamera () {
+        return create2DCamera();
+//        return create3DCamera();
+    }
 
-    private ARenderer createRenderer () {
+    private PerspectiveCamera create3DCamera () {
+        final PerspectiveCamera camera = new PerspectiveCamera();
+        camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f, 0);
+        camera.update();
+
+        return camera;
+    }
+
+    private OrthographicCamera create2DCamera () {
         final OrthographicCamera camera = new OrthographicCamera();
         camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f, 0);
         camera.update();
+
+        return camera;
+    }
+
+    private ARenderer createRenderer () {
+        Camera camera = createCamera();
 
         Viewport viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         API.get(GraphicsUtils.class).setGameViewport(viewport);

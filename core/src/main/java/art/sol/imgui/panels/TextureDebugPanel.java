@@ -1,11 +1,8 @@
 package art.sol.imgui.panels;
 
-import art.sol.imgui.widgets.ADebugPanel;
-import art.sol.util.Supplier;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 import imgui.ImGui;
 
 public class TextureDebugPanel extends ADebugPanel {

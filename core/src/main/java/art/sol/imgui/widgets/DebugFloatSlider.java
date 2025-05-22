@@ -1,32 +1,24 @@
 package art.sol.imgui.widgets;
 
-import art.sol.imgui.DebugRenderable;
-import art.sol.valueproviders.FloatProvider;
 import art.sol.valueproviders.io.FloatReader;
 import art.sol.valueproviders.io.FloatWriter;
 import imgui.ImGui;
 import imgui.flag.ImGuiSliderFlags;
-import lombok.NonNull;
 import lombok.Setter;
 
-public class DebugFloatSlider implements DebugRenderable {
+public class DebugFloatSlider {
     private final String title;
 
     private float min = 0;
     private float max = 10;
 
-    private final FloatProvider floatProvider;
-
     @Setter
     private int sliderFlags = ImGuiSliderFlags.None;
 
-    public DebugFloatSlider (String title, @NonNull FloatProvider floatProvider) {
-        this.floatProvider = floatProvider;
-        this.title = title;
-    }
+    private final float[] data = new float[1];
 
-    public DebugFloatSlider (String title, FloatReader fr, FloatWriter fw) {
-        this(title, new FloatProvider(fr, fw));
+    public DebugFloatSlider (String title) {
+        this.title = title;
     }
 
     public void setConstraints (float min, float max) {
@@ -34,10 +26,12 @@ public class DebugFloatSlider implements DebugRenderable {
         this.max = max;
     }
 
-    @Override
-    public final void render() {
-        if (ImGui.sliderFloat(title, floatProvider.asPrimitiveArray(), min, max, null, sliderFlags)) {
-            floatProvider.writeData();
+    public final void render (FloatReader fr, FloatWriter fw) {
+        float current = fr.read();
+        data[0] = current;
+
+        if (ImGui.sliderFloat(title, data, min, max, null, sliderFlags)) {
+            fw.write(data[0]);
         }
     }
 }

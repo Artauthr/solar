@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import lombok.Getter;
@@ -77,7 +78,7 @@ public class StarBackgroundFrameBuffer {
         spriteBatch.setProjectionMatrix(camera.combined);
 
         for (Body star : stars) {
-            Vector2 position = star.getPosition();
+            Vector3 position = star.getPosition();
             Color color = star.getColor();
             float radius = star.getRadius();
             float size = radius;
@@ -130,7 +131,7 @@ public class StarBackgroundFrameBuffer {
 
                 Body star = new Body(mass, radius);
                 star.setColor(Color.WHITE);
-                star.getPosition().set(posX, posY);
+                star.getPosition().set(posX, posY, 0);
 
                 stars.add(star);
             }

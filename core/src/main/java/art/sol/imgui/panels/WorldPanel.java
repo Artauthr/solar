@@ -1,11 +1,8 @@
 package art.sol.imgui.panels;
 
 import art.sol.SolarSystem;
-import art.sol.imgui.widgets.ADebugPanel;
 import art.sol.imgui.widgets.DebugCheckboxWidget;
 import art.sol.imgui.widgets.DebugFloatSlider;
-import art.sol.valueproviders.BooleanProvider;
-import art.sol.valueproviders.FloatProvider;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 
@@ -19,29 +16,17 @@ public class WorldPanel extends ADebugPanel {
     }
 
     public WorldPanel() {
-        timeStepSlider = new DebugFloatSlider("Timestep",
-                new FloatProvider(() ->
-                SolarSystem.get().getTimeStep(),
-                value -> SolarSystem.get().setTimeStep(value)));
-        
+        timeStepSlider = new DebugFloatSlider("Timestep");
         timeStepSlider.setConstraints(-0.4f, 0.4f);
 
-        activeCheckBox = new DebugCheckboxWidget("Active",
-                new BooleanProvider(
-                        ()-> SolarSystem.get().isActive(),
-                        value -> SolarSystem.get().setActive(value)));
+        activeCheckBox = new DebugCheckboxWidget("Active");
     }
 
     @Override
     public void renderContent() {
         ImGui.pushItemWidth(100);
-        timeStepSlider.render();
-        activeCheckBox.render();
-
-        if (ImGui.beginCombo("Scenes", "scn")) {
-            ImGui.button("bruh");
-            ImGui.endCombo();
-        }
+        timeStepSlider.render(() -> SolarSystem.get().getTimeStep(), value -> SolarSystem.get().setTimeStep(value));
+        activeCheckBox.render(() -> SolarSystem.get().isActive(), value -> SolarSystem.get().setActive(value));
     }
 
     @Override

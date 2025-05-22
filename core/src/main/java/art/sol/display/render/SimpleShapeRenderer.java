@@ -1,12 +1,9 @@
 package art.sol.display.render;
 
 import art.sol.Body;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -32,7 +29,7 @@ public class SimpleShapeRenderer extends ARenderer {
         shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 
         for (Body body : bodies) {
-            Vector2 position = body.getPosition();
+            Vector3 position = body.getPosition();
 
             shapeRenderer.setColor(body.getColor());
             shapeRenderer.circle(position.x, position.y, body.getRadius(), CIRCLE_SEGMENT_COUNT);

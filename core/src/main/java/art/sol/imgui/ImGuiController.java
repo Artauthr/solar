@@ -1,41 +1,21 @@
 package art.sol.imgui;
 
-import art.sol.API;
-import art.sol.Main;
 import art.sol.Utils;
-import art.sol.display.render.ARenderer;
-import art.sol.display.render.AdditiveBlendingFbRenderer;
-import art.sol.display.render.GraphicsUtils;
-import art.sol.imgui.annotations.DebugTexture;
-import art.sol.imgui.panels.BodyDebugPanel;
-import art.sol.imgui.panels.RenderingDebugPanel;
-import art.sol.imgui.panels.TextureDebugPanel;
-import art.sol.imgui.widgets.ADebugPanel;
-import art.sol.imgui.panels.WorldPanel;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.ObjectMap;
 import imgui.*;
-import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
-import org.lwjgl.opengl.GL20;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 
 public class ImGuiController implements Disposable {
-    private final ObjectMap<Class<? extends ADebugPanel>, ADebugPanel> classPanelMap = new ObjectMap<>();
-
-    private final Array<ADebugPanel> panels = new Array<>();
     private final ImGuiImplGlfw imGuiGlfw;
     private final ImGuiImplGl3 imGuiGl3;
     private InputProcessor savedInputProcessor = null;
+
+    private final ImGuiStage imGuiStage;
 
     public static final String FONT_PATH = "fonts/Roboto-Medium.ttf";
 
@@ -50,21 +30,7 @@ public class ImGuiController implements Disposable {
         imGuiGlfw.init(windowHandle, true);
         imGuiGl3.init("#version 330");
 
-        registerPanels();
-    }
-
-    private void registerPanels () {
-        registerPanel(new WorldPanel());
-        if (Main.PROFILING_ENABLED) {
-            registerPanel(new RenderingDebugPanel());
-        }
-        registerPanel(new BodyDebugPanel());
-        registerPanel(new TextureDebugPanel());
-    }
-
-    private void registerPanel (ADebugPanel panel) {
-        panels.add(panel);
-        classPanelMap.put(panel.getClass(), panel);
+        imGuiStage = new ImGuiStage();
     }
 
     private void configureIO (final ImGuiIO io) {
@@ -94,18 +60,12 @@ public class ImGuiController implements Disposable {
     public void render () {
         newFrame();
 
-        ImVec2 center = ImGui.getMainViewport().getCenter();
-
-        float offset = 0;
-        for (ADebugPanel panel : panels) {
-            ImGui.setNextWindowPos(0, center.y - offset, ImGuiCond.FirstUseEver);
-            offset += 100;
-            panel.render();
-        }
+        imGuiStage.draw();
 
         renderFrame();
         pollInputs();
     }
+
 
     private void newFrame () {
         imGuiGlfw.newFrame();
@@ -118,7 +78,7 @@ public class ImGuiController implements Disposable {
         imGuiGl3.renderDrawData(ImGui.getDrawData());
     }
 
-    private void pollInputs() {
+    private void pollInputs () {
         ImGuiIO io = ImGui.getIO();
         boolean imguiWantsInput = io.getWantCaptureMouse() || io.getWantCaptureKeyboard();
         if (imguiWantsInput) {
@@ -132,32 +92,11 @@ public class ImGuiController implements Disposable {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private <T extends ADebugPanel> T getPanel (Class<T> panelClass) {
-        return (T) classPanelMap.get(panelClass);
-    }
-
     @Override
     public void dispose () {
         imGuiGlfw.shutdown();
         imGuiGl3.shutdown();
 
         ImGui.destroyContext();
-    }
-
-    public void hookToRenderer (ARenderer renderer) throws IllegalAccessException {
-        Field[] declaredFields = renderer.getClass().getDeclaredFields();
-
-        for (Field field : declaredFields) {
-            DebugTexture debugTextureAnnotation = field.getAnnotation(DebugTexture.class);
-
-            if (debugTextureAnnotation == null) {
-                continue;
-            }
-
-            TextureDebugPanel texDebugPanel = getPanel(TextureDebugPanel.class);
-            field.setAccessible(true);
-            texDebugPanel.add((Texture) field.get(renderer));
-        }
     }
 }

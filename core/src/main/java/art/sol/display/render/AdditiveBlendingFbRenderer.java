@@ -3,14 +3,13 @@ package art.sol.display.render;
 import art.sol.Body;
 import art.sol.display.ShaderManager;
 import art.sol.display.StarBackgroundFrameBuffer;
-import art.sol.imgui.annotations.DebugTexture;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import lombok.Getter;
@@ -26,17 +25,14 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     private final Texture glowFadeoutTexture;
 
     @Getter
-    @DebugTexture
     private TextureRegion lightBufferTextureRegion;
     private FrameBuffer lightFrameBuffer;
 
     private FrameBuffer planetsFrameBuffer;
 
-    @DebugTexture
     private TextureRegion planetsBufferTextureRegion;
 
     @Getter
-    @DebugTexture
     private TextureRegion trailBufferTextureRegion;
 
 
@@ -130,9 +126,9 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         spriteBatch.draw(planetsBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         spriteBatch.draw(lightBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        spriteBatch.setShader(glowFadeShader);
-        spriteBatch.draw(trailBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        spriteBatch.setShader(null);
+//        spriteBatch.setShader(glowFadeShader);
+//        spriteBatch.draw(trailBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//        spriteBatch.setShader(null);
 
 
         spriteBatch.end();
@@ -146,42 +142,24 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         Gdx.gl.glClearColor(0,0,0,0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // make sure depth test is off (or at least not interfering)
-//        Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-//        Gdx.gl.glEnable(GL20.GL_BLEND);
-
-        // ADDITIVE blend: src*α + dst*1
         spriteBatch.enableBlending();
-//        Gdx.gl.glBlendEquation(GL30.GL_MAX);                // pick max(src, dst)
         spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
-
-//        Gdx.gl.glEnable(GL20.GL_BLEND);
-//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE);
 
         spriteBatch.setColor(lightPassColor);
 
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
         for (Body body : bodies) {
-            Vector2 position = body.getPosition();
+            Vector3 position = body.getPosition();
             Color color = body.getColor();
             float radius = body.getRadius();
             float size = radius * body.getLightEmission();
-//            spriteBatch.setColor(color);
-//            lightPassColor.r = color.r;
-//            lightPassColor.g = color.g;
-//            lightPassColor.b = color.b;
             lightPassColor.set(color.r, color.g, color.b, 1f);
 
             spriteBatch.setColor(lightPassColor);
             spriteBatch.draw(lightTexture, position.x - size * 0.5f, position.y - size * 0.5f, size, size);
-//            float size = body.getRadius() * body.getLightEmission();
-//            spriteBatch.setColor(body.getColor());
-//            spriteBatch.draw(lightTexture, body.getPosition().x - size/2f,
-//                    body.getPosition().y - size/2f,
-//                    size, size
-//            );
         }
+
         spriteBatch.setColor(Color.WHITE);
         spriteBatch.end();
 
@@ -194,8 +172,6 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         trailFrameBuffer.begin();
         spriteBatch.enableBlending();
         spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-//        Gdx.gl.glEnable(GL20.GL_BLEND);
-//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_SRC_ALPHA);
 
         Gdx.gl.glClearColor(0f, 0f, 0f, 0.02f);
 
@@ -213,7 +189,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         spriteBatch.begin();
 
         for (Body body : bodies) {
-            Vector2 position = body.getPosition();
+            Vector3 position = body.getPosition();
             Color color = body.getColor();
             float radius = body.getRadius();
             float size = radius * 2f;
@@ -234,7 +210,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         spriteBatch.begin();
 
         for (Body body : bodies) {
-            Vector2 position = body.getPosition();
+            Vector3 position = body.getPosition();
             Color color = body.getColor();
             float radius = body.getRadius();
             float size = radius * 2;
