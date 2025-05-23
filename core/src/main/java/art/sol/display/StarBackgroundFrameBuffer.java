@@ -83,7 +83,7 @@ public class StarBackgroundFrameBuffer {
             float radius = star.getRadius();
             float size = radius;
             spriteBatch.setColor(color);
-            spriteBatch.draw(texture, position.x - size * 0.5f, position.y - size * 0.5f, size, size);
+            spriteBatch.draw(texture, position.x - size, position.y - size, size, size);
         }
 
 //        Pixmap fromFrameBuffer = Pixmap.createFromFrameBuffer(0, 0, FB_WIDTH, FB_HEIGHT);
@@ -97,7 +97,7 @@ public class StarBackgroundFrameBuffer {
         final Array<Body> stars = new Array<>();
 
         // Define the approximate cell size for each star (including spacing)
-        float cellSize = 34;  // Adjust this value to increase or decrease star density
+        float cellSize = 12;  // Adjust this value to increase or decrease star density
 
         // Compute the number of columns and rows based on the framebuffer size
         int columns = (int)(Gdx.graphics.getWidth() / cellSize);

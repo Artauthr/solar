@@ -95,9 +95,8 @@ public class Main extends ApplicationAdapter {
 
     private ARenderer createRenderer () {
         Camera camera = createCamera();
-
+//
         Viewport viewport = new ExtendViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
-        API.get(GraphicsUtils.class).setGameViewport(viewport);
 
         debugShapeRenderer = new ShapeRenderer(5000, ShaderManager.getOrCreateShader("default"));
         debugShapeRenderer.setAutoShapeType(true);
@@ -106,9 +105,12 @@ public class Main extends ApplicationAdapter {
 
 //        ScreenViewport viewport = new ScreenViewport(camera);
 //        viewport.setWorldSize(WORLD_WIDTH, WORLD_HEIGHT);
-        API.get(GraphicsUtils.class).setGameViewport(viewport);
+//        API.get(GraphicsUtils.class).setGameViewport(viewport);
 
+        API.get(GraphicsUtils.class).setGameViewport(viewport);
         return new AdditiveBlendingFbRenderer(viewport);
+//        Renderer3D renderer3D = new Renderer3D(viewport);
+//        return renderer3D;
     }
 
     @Override

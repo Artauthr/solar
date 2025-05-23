@@ -1,6 +1,8 @@
 package art.sol.input;
 
 import art.sol.API;
+import art.sol.display.render.ARenderer;
+import art.sol.display.render.AdditiveBlendingFbRenderer;
 import art.sol.display.render.GraphicsUtils;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
@@ -25,6 +27,12 @@ public class CameraController extends InputAdapter {
         OrthographicCamera orthographicCamera = (OrthographicCamera) camera;
         orthographicCamera.zoom = MathUtils.clamp(orthographicCamera.zoom + amountY * CAMERA_ZOOM_SPEED, MIN_ZOOM, MAX_ZOOM);
         orthographicCamera.update();
+
+        ARenderer renderer = graphicsUtils.getRenderer();
+        if (renderer instanceof AdditiveBlendingFbRenderer) {
+            AdditiveBlendingFbRenderer bruh = (AdditiveBlendingFbRenderer) renderer;
+            bruh.regenStars();
+        }
 
         return super.scrolled(amountX, amountY);
     }

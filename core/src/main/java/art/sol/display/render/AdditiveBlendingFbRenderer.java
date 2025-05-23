@@ -7,41 +7,56 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AdditiveBlendingFbRenderer extends ARenderer {
     private static final Logger log = LoggerFactory.getLogger(AdditiveBlendingFbRenderer.class);
-    private final SpriteBatch spriteBatch;
-    private final Texture circleTexture;
-    private Texture lightTexture;
 
+    private final SpriteBatch spriteBatch;
+
+    private final Texture circleTexture;
+    private final Texture lightTexture;
     private final Texture glowFadeoutTexture;
+
+
+    private FrameBuffer lightFrameBuffer;
+    private FrameBuffer planetsFrameBuffer;
+    private FrameBuffer trailFrameBuffer;
 
     @Getter
     private TextureRegion lightBufferTextureRegion;
-    private FrameBuffer lightFrameBuffer;
 
-    private FrameBuffer planetsFrameBuffer;
-
+    @Getter
     private TextureRegion planetsBufferTextureRegion;
 
     @Getter
     private TextureRegion trailBufferTextureRegion;
 
-
-    private FrameBuffer trailFrameBuffer;
-
     private final ShaderProgram glowFadeShader;
+    private final ShaderProgram radialShader;
 
     @Getter
-    private StarBackgroundFrameBuffer starBackgroundFrameBuffer;
+    private final StarBackgroundFrameBuffer starBackgroundFrameBuffer;
+
+    @Getter
+    @Setter
+    private boolean drawLightPass = true;
+    @Getter
+    @Setter
+    private boolean drawTracePass = true;
+    @Getter
+    @Setter
+    private boolean drawPlanetsPass = true;
 
     public AdditiveBlendingFbRenderer (Viewport viewport) {
         super(viewport);
@@ -50,6 +65,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         this.spriteBatch = new SpriteBatch(1000, defaultShader);
 
         glowFadeShader = ShaderManager.getOrCreateShader("fade");
+        radialShader = ShaderManager.getOrCreateShader("radial");
 
         circleTexture = new Texture(Gdx.files.internal("sprites/circle.png"));
         circleTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -107,7 +123,6 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         drawTracePass(bodies);
         drawPlanets(bodies);
 
-//        starBackgroundFrameBuffer.drawToFrameBuffer(lightTexture);
         // draw all frameBuffers
 
 //        Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -118,17 +133,23 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         spriteBatch.setProjectionMatrix(spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
 //        spriteBatch.disableBlending();
-        spriteBatch.enableBlending();
-        spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+//        spriteBatch.enableBlending();
+//        spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        // draw trail fb with a shader that removes near 0 alpha pixels
-//        spriteBatch.draw(starBackgroundFrameBuffer.getTextureRegion(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        spriteBatch.draw(planetsBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        spriteBatch.draw(lightBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        spriteBatch.draw(starBackgroundFrameBuffer.getTextureRegion(), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-//        spriteBatch.setShader(glowFadeShader);
-//        spriteBatch.draw(trailBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//        spriteBatch.setShader(null);
+
+        if (drawPlanetsPass) {
+            spriteBatch.draw(planetsBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
+
+        if (drawLightPass) {
+            spriteBatch.draw(lightBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
+
+        if (drawTracePass) {
+            spriteBatch.draw(trailBufferTextureRegion, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        }
 
 
         spriteBatch.end();
@@ -153,7 +174,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
             Vector3 position = body.getPosition();
             Color color = body.getColor();
             float radius = body.getRadius();
-            float size = radius * body.getLightEmission();
+            float size = radius * 2 * body.getLightEmission();
             lightPassColor.set(color.r, color.g, color.b, 1f);
 
             spriteBatch.setColor(lightPassColor);
@@ -173,8 +194,7 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         spriteBatch.enableBlending();
         spriteBatch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        Gdx.gl.glClearColor(0f, 0f, 0f, 0.02f);
-
+//        spriteBatch.setShader(glowFadeShader);
         // draw a rectangle with alpha to gradually make existing glows transparent
 //        spriteBatch.setProjectionMatrix(spriteBatch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 //        spriteBatch.begin();
@@ -183,10 +203,11 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
 //        spriteBatch.end();
 
         // draw the light textures
-//        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_SRC_ALPHA);
         spriteBatch.setColor(Color.WHITE);
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
+
+        spriteBatch.setShader(glowFadeShader);
 
         for (Body body : bodies) {
             Vector3 position = body.getPosition();
@@ -196,6 +217,9 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
             spriteBatch.setColor(color);
             spriteBatch.draw(lightTexture, position.x - size * 0.5f, position.y - size * 0.5f, size, size);
         }
+
+        spriteBatch.setShader(ShaderManager.getOrCreateShader("default"));
+
         spriteBatch.end();
         trailFrameBuffer.end();
     }
@@ -209,6 +233,8 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
 
+        spriteBatch.setShader(radialShader);
+
         for (Body body : bodies) {
             Vector3 position = body.getPosition();
             Color color = body.getColor();
@@ -218,6 +244,8 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
             spriteBatch.setColor(color);
             spriteBatch.draw(circleTexture, position.x - size * 0.5f, position.y - size * 0.5f, size, size);
         }
+
+        spriteBatch.setShader(null);
         spriteBatch.end();
         planetsFrameBuffer.end();
     }
@@ -226,10 +254,12 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
     public void onResize(int width, int height) {
         super.onResize(width, height);
         invalidateFrameBuffers();
-//        starBackgroundFrameBuffer.getScreenViewport().update(width, height, true);
-//        starBackgroundFrameBuffer.regenerate();
+        starBackgroundFrameBuffer.getScreenViewport().update(width, height, true);
+        starBackgroundFrameBuffer.regenerate();
 
+        starBackgroundFrameBuffer.drawToFrameBuffer(lightTexture);
     }
+
 
     @Override
     public void dispose() {
@@ -241,5 +271,11 @@ public class AdditiveBlendingFbRenderer extends ARenderer {
         glowFadeoutTexture.dispose();
         planetsFrameBuffer.dispose();
         glowFadeShader.dispose();
+    }
+
+    public void regenStars () {
+
+//        starBackgroundFrameBuffer.regenerate();
+//        starBackgroundFrameBuffer.drawToFrameBuffer(lightTexture);
     }
 }

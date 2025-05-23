@@ -1,10 +1,6 @@
 package art.sol.imgui;
 
-import art.sol.imgui.panels.BodyDebugPanel;
-import art.sol.imgui.panels.RenderingDebugPanel;
-import art.sol.imgui.panels.TextureDebugPanel;
-import art.sol.imgui.panels.WorldPanel;
-import art.sol.imgui.panels.ADebugPanel;
+import art.sol.imgui.panels.*;
 import com.badlogic.gdx.utils.Array;
 
 public class ImGuiStage {
@@ -16,6 +12,7 @@ public class ImGuiStage {
         debugWindows.add(new WorldPanel());
         debugWindows.add(new TextureDebugPanel());
         debugWindows.add(new RenderingDebugPanel());
+        debugWindows.add(new AdditiveRenderingDebugPanel());
     }
 
     public void draw () {

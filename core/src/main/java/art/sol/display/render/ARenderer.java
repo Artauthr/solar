@@ -10,12 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class ARenderer implements Disposable {
     @Getter
-    protected final Viewport viewport;
+    protected Viewport viewport;
 
     abstract public void drawBodies (Array<Body> bodies);
 
     public void onResize (int width, int height) {
-        viewport.update(width, height, true);
+        if (viewport != null) {
+            viewport.update(width, height, true);
+        }
     }
 
     public ARenderer (Viewport viewport) {

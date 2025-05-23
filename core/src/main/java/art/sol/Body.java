@@ -10,7 +10,7 @@ import lombok.Setter;
 public class Body {
     private float mass;
     private float radius;
-    private float lightEmission = 12f;
+    private float lightEmission = 4f;
 
     private final Vector3 position = new Vector3();
     private final Vector3 velocity = new Vector3();

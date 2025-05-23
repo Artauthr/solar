@@ -66,7 +66,6 @@ public class ImGuiController implements Disposable {
         pollInputs();
     }
 
-
     private void newFrame () {
         imGuiGlfw.newFrame();
         imGuiGl3.newFrame();
