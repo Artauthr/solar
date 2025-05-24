@@ -13,6 +13,7 @@ public class ImGuiStage {
         debugWindows.add(new TextureDebugPanel());
         debugWindows.add(new RenderingDebugPanel());
         debugWindows.add(new AdditiveRenderingDebugPanel());
+        debugWindows.add(new DebugDebugPanel());
     }
 
     public void draw () {

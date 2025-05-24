@@ -1,4 +1,4 @@
 package art.sol.observer;
 
-public class Event {
+public abstract class Event {
 }

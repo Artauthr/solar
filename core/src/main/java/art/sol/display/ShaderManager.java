@@ -2,6 +2,7 @@ package art.sol.display;
 
 import art.sol.API;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.utils.ObjectMap;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,14 @@ public class ShaderManager {
         String fragPath = "shaders/" + name + ".frag";
         String vertexPath = "shaders/" + name + ".vert";
 
-        ShaderProgram shaderProgram = new ShaderProgram(Gdx.files.internal(vertexPath), Gdx.files.internal(fragPath));
+        FileHandle fragmentFilePath = Gdx.files.internal(fragPath);
+        FileHandle vertexFilePath = Gdx.files.internal(vertexPath);
+        if (!vertexFilePath.exists()) {
+            // use default vertex shader
+            vertexFilePath = Gdx.files.internal("shaders/default.vert");
+        }
+
+        ShaderProgram shaderProgram = new ShaderProgram(vertexFilePath, fragmentFilePath);
 
         if (!shaderProgram.isCompiled()) {
             log.error("Failed to compile shader: {}", name);

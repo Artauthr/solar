@@ -4,6 +4,8 @@ import art.sol.display.ShaderManager;
 import art.sol.display.render.*;
 import art.sol.imgui.ImGuiController;
 import art.sol.input.InputController;
+import art.sol.observer.EventModule;
+import art.sol.observer.events.ResizeEvent;
 import art.sol.scenes.TestScene;
 import art.sol.ui.UIController;
 import com.badlogic.gdx.ApplicationAdapter;
@@ -36,6 +38,7 @@ public class Main extends ApplicationAdapter {
 
     private void init () {
         API.getInstance().register(new ShaderManager());
+        API.getInstance().register(new EventModule());
 
         GraphicsUtils graphicsUtils = new GraphicsUtils();
 
@@ -143,6 +146,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void resize (int width, int height) {
         super.resize(width, height);
+        API.get(EventModule.class).fireEvent(ResizeEvent.class);
         renderer.onResize(width, height);
 
         API.get(UIController.class).onResize(width, height);
